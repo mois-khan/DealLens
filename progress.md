@@ -25,10 +25,10 @@
 - [ ] `shimmer` and `fadeIn` animations added to `tailwind.config.js`
 - [ ] React Router installed and configured
 - [ ] Axios installed
-- [ ] FastAPI project initialised at `backend/`
-- [ ] `requirements.txt` installed in virtualenv
-- [ ] `.env` created locally (never committed)
-- [ ] `.env.example` committed with placeholder keys
+- [x] FastAPI project initialised at `backend/`
+- [x] `requirements.txt` installed in virtualenv
+- [x] `.env` created locally (never committed)
+- [x] `.env.example` committed with placeholder keys
 - [ ] All API keys obtained and in `.env`:
   - [ ] `GEMINI_API_KEY`
   - [ ] `TAVILY_API_KEY`
@@ -36,7 +36,7 @@
   - [ ] `CRUNCHBASE_API_KEY`
   - [ ] `SUPABASE_URL` + `SUPABASE_ANON_KEY`
 - [ ] Supabase project created + `analyses` table schema run
-- [ ] `GET /health` → 200 confirmed
+- [x] `GET /health` → 200 confirmed
 
 ---
 
