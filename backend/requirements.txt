@@ -1,0 +1,10 @@
+fastapi==0.111.0
+uvicorn==0.30.1
+python-multipart==0.0.9
+pymupdf
+google-genai>=1.0.0
+tavily-python==0.3.3
+httpx>=0.27.0
+supabase>=2.5.0
+pydantic>=2.7.4
+python-dotenv==1.0.1
