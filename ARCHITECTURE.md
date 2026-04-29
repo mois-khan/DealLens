@@ -49,8 +49,8 @@ An investor uploads a startup's pitch deck (PDF). DealLens:
 | Frontend | React + Vite + Tailwind | Fastest path to polished UI, team familiarity |
 | Backend | FastAPI (Python) | Async native, all AI/data libs are Python-first |
 | PDF parsing | PyMuPDF | 3 lines of code, free, handles 99% of modern PDFs |
-| AI — primary | Gemini 2.5 Flash | Best free reasoning, 500 RPD, 1M token context |
-| AI — secondary | Gemini 2.5 Flash-Lite | High-volume simple tasks, 1,000 RPD free |
+| AI — primary | Gemini 3.1 Flash | Best free reasoning, 500 RPD, 1M token context |
+| AI — secondary | Gemini 3.1 Flash-Lite | High-volume simple tasks, 1,000 RPD free |
 | Web search | Tavily | Returns full page content ready for LLM, not just snippets |
 | Competitor data | Serper | Google results as clean JSON, 2,500 free queries |
 | Startup data | Crunchbase | Founder + funding database, 7-day free trial |
@@ -74,7 +74,7 @@ An investor uploads a startup's pitch deck (PDF). DealLens:
 │  ┌──────────────┐  ┌────────────────────────────────────────┐   │
 │  │   PyMuPDF    │  │         Analysis Pipeline              │   │
 │  │  PDF → text  │─▶│                                        │   │
-│  └──────────────┘  │  Gemini 2.5 Flash (Claim Extraction)   │   │
+│  └──────────────┘  │  Gemini 3.1 Flash (Claim Extraction)   │   │
 │                    │         │                              │   │
 │                    │         ▼                              │   │
 │                    │  asyncio.gather() — parallel calls     │   │
@@ -83,13 +83,13 @@ An investor uploads a startup's pitch deck (PDF). DealLens:
 │                    │   └── Crunchbase (founder + startups)  │   │
 │                    │         │                              │   │
 │                    │         ▼                              │   │
-│                    │  Gemini 2.5 Flash (5 analysis modules) │   │
+│                    │  Gemini 3.1 Flash (5 analysis modules) │   │
 │                    │         │                              │   │
 │                    │         ▼                              │   │
-│                    │  Gemini 2.5 Flash (synthesis + Qs)     │   │
+│                    │  Gemini 3.1 Flash (synthesis + Qs)     │   │
 │                    │         │                              │   │
 │                    │         ▼                              │   │
-│                    │  Gemini 2.5 Flash-Lite (scorecard)     │   │
+│                    │  Gemini 3.1 Flash-Lite (scorecard)     │   │
 │                    └────────────────────────────────────────┘   │
 │                                        │                         │
 │                            ┌───────────▼──────────┐             │
@@ -105,8 +105,8 @@ DealLens uses two Gemini models strategically to maximise free tier quota.
 
 | Model | Free tier limit | Used for |
 |---|---|---|
-| `gemini-2.5-flash` | 500 RPD, 10 RPM | Complex analysis — extraction, module analysis, synthesis, questions |
-| `gemini-2.5-flash-lite` | 1,000 RPD, 15 RPM | Simple tasks — scorecard aggregation, JSON validation |
+| `gemini-3.1-flash` | 500 RPD, 10 RPM | Complex analysis — extraction, module analysis, synthesis, questions |
+| `gemini-3.1-flash-lite` | 1,000 RPD, 15 RPM | Simple tasks — scorecard aggregation, JSON validation |
 
 A single deck analysis uses ~8 Gemini calls total. At 500 RPD on Flash, you can run ~60 full analyses per day — more than enough for a hackathon demo.
 
@@ -535,16 +535,16 @@ def extract_text(pdf_bytes: bytes) -> str:
 
 ```
 # backend/requirements.txt
-fastapi==0.111.0
-uvicorn==0.30.1
-python-multipart==0.0.9
-PyMuPDF==1.24.5
-google-generativeai==0.7.2
-tavily-python==0.3.3
-httpx==0.27.0
-supabase==2.5.0
-pydantic==2.7.4
-python-dotenv==1.0.1
+fastapi==0.136.1
+uvicorn==0.46.0
+python-multipart==0.0.27
+pymupdf==1.27.2.3
+google-genai==1.73.1
+tavily-python==0.7.24
+httpx==0.28.1
+supabase==2.29.0
+pydantic==2.13.3
+python-dotenv==1.2.2
 ```
 
 ---
@@ -555,30 +555,33 @@ python-dotenv==1.0.1
 
 ```python
 # backend/services/gemini_client.py
-import google.generativeai as genai
+import google.genai as genai
+from google.genai import types
 import os, asyncio, json, time
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-FLASH      = "gemini-2.5-flash"       # Primary — complex reasoning
-FLASH_LITE = "gemini-2.5-flash-lite"  # Secondary — simple tasks, more quota
+FLASH      = "gemini-3.1-flash"       # Primary — complex reasoning
+FLASH_LITE = "gemini-3.1-flash-lite"  # Secondary — simple tasks, more quota
 
 
 def _call_sync(model_name: str, system: str, user: str, max_tokens: int = 2048) -> str:
     """Sync call with 3-attempt retry on rate limit (429)."""
-    model = genai.GenerativeModel(
-        model_name=model_name,
+    config = types.GenerateContentConfig(
         system_instruction=system,
-        generation_config=genai.GenerationConfig(
-            max_output_tokens=max_tokens,
-            temperature=0.1,  # Always 0.1 — analytical consistency
-        )
+        max_output_tokens=max_tokens,
+        temperature=0.1,  # Always 0.1 — analytical consistency
     )
     for attempt in range(3):
         try:
-            return model.generate_content(user).text
+            response = _client.models.generate_content(
+                model=model_name,
+                contents=user,
+                config=config,
+            )
+            return response.text
         except Exception as e:
-            if "429" in str(e) or "quota" in str(e).lower():
+            if "429" in str(e) or "quota" in str(e).lower() or "RESOURCE_EXHAUSTED" in str(e):
                 wait = (attempt + 1) * 10
                 print(f"[Gemini] Rate limit. Retry {attempt+1}/3 in {wait}s...")
                 time.sleep(wait)

@@ -11,7 +11,7 @@
 
 | Session | Date | Who | What was done |
 |---|---|---|---|
-| 1 | — | — | — |
+| 1 | 30 April 2026 | Antigravity (AI) & User | Cleaned slate, set up backend structure, `.env`, `requirements.txt`, Supabase DB schema + client, and Pydantic data models. |
 
 *Update this table at the end of every session. One row per session.*
 
@@ -25,17 +25,18 @@
 - [ ] `shimmer` and `fadeIn` animations added to `tailwind.config.js`
 - [ ] React Router installed and configured
 - [ ] Axios installed
+
 - [x] FastAPI project initialised at `backend/`
 - [x] `requirements.txt` installed in virtualenv
 - [x] `.env` created locally (never committed)
 - [x] `.env.example` committed with placeholder keys
-- [ ] All API keys obtained and in `.env`:
-  - [ ] `GEMINI_API_KEY`
-  - [ ] `TAVILY_API_KEY`
-  - [ ] `SERPER_API_KEY`
-  - [ ] `CRUNCHBASE_API_KEY`
-  - [ ] `SUPABASE_URL` + `SUPABASE_ANON_KEY`
-- [ ] Supabase project created + `analyses` table schema run
+- [x] All API keys obtained and in `.env`:
+  - [x] `GEMINI_API_KEY`
+  - [x] `TAVILY_API_KEY`
+  - [x] `SERPER_API_KEY`
+  - [ ] `CRUNCHBASE_API_KEY` (Optional for now)
+  - [x] `SUPABASE_URL` + `SUPABASE_ANON_KEY`
+- [x] Supabase project created + `analyses` table schema run
 - [x] `GET /health` → 200 confirmed
 
 ---
@@ -44,14 +45,14 @@
 
 ### Infrastructure
 
-- [ ] `main.py` — FastAPI app + CORS for `localhost:5173`
+- [x] `main.py` — FastAPI app + CORS for `localhost:5173`
 - [ ] `routers/analyse.py` — route stubs (`POST /analyse`, `GET /report/{id}`)
-- [ ] `models/report.py` — all Pydantic models matching `architecture.md` section 10
+- [x] `models/report.py` — all Pydantic models matching `architecture.md` section 10
 - [ ] `services/gemini_client.py` — dual model wrapper + 3-attempt exponential backoff
 - [ ] `services/tavily_client.py` — search wrapper + 10s timeout
 - [ ] `services/serper_client.py` — search wrapper + 10s timeout
 - [ ] `services/crunchbase_client.py` — founder + startup lookup + 10s timeout
-- [ ] `db/supabase_client.py` — `save_report()` and `get_report()` functions
+- [x] `db/supabase_client.py` — `save_report()` and `get_report()` functions
 
 ### Pipeline Modules
 
