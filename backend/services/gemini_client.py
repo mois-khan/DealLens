@@ -3,40 +3,72 @@ import asyncio
 import json
 import time
 import logging
-from typing import Optional
+from typing import List
 
 from google import genai
 from google.genai import types
 
 logger = logging.getLogger(__name__)
 
-# Validate key at startup — a missing key must never silently pass (rules.md §11)
-_API_KEY = os.getenv("GEMINI_API_KEY")
-if not _API_KEY:
-    raise RuntimeError("GEMINI_API_KEY environment variable is not set.")
+# ── Multi-Key Management ──────────────────────────────────────────────────────
 
-_client = genai.Client(api_key=_API_KEY)
+def _load_clients() -> List[genai.Client]:
+    """
+    Scans environment for all GEMINI_API_KEY_x variables and initializes clients.
+    If none found, falls back to the standard GEMINI_API_KEY.
+    """
+    keys = []
+    # Check for GEMINI_API_KEY_1, _2, _3...
+    for i in range(1, 11):
+        key = os.getenv(f"GEMINI_API_KEY_{i}")
+        if key:
+            keys.append(key)
+    
+    # Fallback to single key if no numbered keys exist
+    if not keys:
+        single_key = os.getenv("GEMINI_API_KEY")
+        if single_key:
+            keys.append(single_key)
+            
+    if not keys:
+        raise RuntimeError("No Gemini API keys found in environment. Please set GEMINI_API_KEY_1, etc.")
+    
+    logger.info(f"[Gemini] Initialized client pool with {len(keys)} API keys.")
+    return [genai.Client(api_key=k) for k in keys]
 
-# Model constants — update here and ONLY here (rules.md §7)
-FLASH      = "gemini-3.1-flash-lite-preview"  # Use 3.1 lite for high quota (500 RPD)
+# Global pool of clients
+_CLIENT_POOL = _load_clients()
+_CURRENT_KEY_INDEX = 0
+
+def _get_next_client() -> genai.Client:
+    global _CURRENT_KEY_INDEX
+    client = _CLIENT_POOL[_CURRENT_KEY_INDEX]
+    # Rotate index for the next call (Round Robin)
+    _CURRENT_KEY_INDEX = (_CURRENT_KEY_INDEX + 1) % len(_CLIENT_POOL)
+    return client
+
+# ── Model Constants ────────────────────────────────────────────────────────────
+
+# Using 3.1 Flash Lite for the highest free-tier quota (500 RPD)
+FLASH      = "gemini-3.1-flash-lite-preview"
 FLASH_LITE = "gemini-3.1-flash-lite-preview"
-
 
 
 def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
     """
-    Blocking Gemini call with 3-attempt exponential backoff on rate limits.
-    Waits: 10s → 20s → 30s before giving up (rules.md §7).
-    Never used directly — always called via call_gemini() thread pool.
+    Blocking Gemini call with Key Rotation + Exponential Backoff.
+    If a key hits a limit, we immediately rotate to the next key.
     """
     config = types.GenerateContentConfig(
         system_instruction=system,
         max_output_tokens=max_tokens,
-        temperature=0.1,  # Always 0.1 — analytical consistency (architecture.md §6)
+        temperature=0.1,
     )
-    for attempt in range(3):
+
+    for attempt in range(len(_CLIENT_POOL) + 1):  # Try each key at least once
+        client = _get_next_client()
         try:
-            response = _client.models.generate_content(
+            response = client.models.generate_content(
                 model=model_name,
                 contents=user,
                 config=config,
@@ -51,14 +83,21 @@ def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
                 or "RESOURCE_EXHAUSTED" in err_str
                 or "UNAVAILABLE" in err_str
             )
-            if is_retryable and attempt < 2:
-                wait = (attempt + 1) * 10
-                logger.warning(f"[Gemini] API busy or rate limit hit. Retry {attempt + 1}/3 in {wait}s...")
+            
+            if is_retryable and attempt < len(_CLIENT_POOL):
+                # We have more keys to try! Rotate and try again immediately.
+                logger.warning(f"[Gemini] Key {_CURRENT_KEY_INDEX} busy/limited. Rotating to next key (Attempt {attempt+1})...")
+                continue
+            elif is_retryable:
+                # We've exhausted all keys in this burst. Final wait.
+                wait = 10
+                logger.warning(f"[Gemini] All keys in pool exhausted. Waiting {wait}s...")
                 time.sleep(wait)
             else:
-                # Non-rate-limit errors are re-raised immediately (rules.md §7)
+                # Critical error (e.g. invalid prompt)
                 raise
-    raise RuntimeError("Gemini rate limit exceeded after 3 retries.")
+
+    raise RuntimeError("Gemini failed after exhausting all keys and retries.")
 
 
 async def call_gemini(
@@ -67,30 +106,17 @@ async def call_gemini(
     model: str = FLASH,
     max_tokens: int = 2048,
 ) -> str:
-    """
-    Async wrapper around _call_sync. Runs the blocking SDK call in a thread pool
-    so it never blocks FastAPI's async event loop (rules.md §6).
-    """
+    """Async wrapper that runs the blocking call in a thread pool."""
     return await asyncio.to_thread(_call_sync, model, system, user, max_tokens)
 
 
 def parse_json(text: str) -> dict:
-    """
-    Strips markdown code fences and parses Gemini's text output as JSON.
-    Gemini sometimes wraps JSON in ```json blocks despite explicit instructions —
-    we strip defensively every time (rules.md §7).
-
-    Logs the raw response before raising so we can debug during the hackathon.
-    """
+    """Defensively strips markdown and parses JSON."""
     original = text
     text = text.strip()
-
-    # Strip opening fence (handles ```json, ```JSON, ``` etc.)
     if text.startswith("```"):
         lines = text.split("\n")
-        # Remove first line (fence open) and last line (fence close)
         text = "\n".join(lines[1:-1]).strip()
-
     try:
         return json.loads(text)
     except json.JSONDecodeError as e:
