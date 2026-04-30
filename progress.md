@@ -12,6 +12,7 @@
 | Session | Date | Who | What was done |
 |---|---|---|---|
 | 1 | 30 April 2026 | Antigravity (AI) & User | Cleaned slate, set up backend structure, `.env`, `requirements.txt`, Supabase DB schema + client, and Pydantic data models. |
+| 2 | 30 April 2026 | Antigravity (AI) & User | Built all API service wrappers, implemented F1 (Claim Extractor), added Multi-Key Rotation for Gemini, and verified end-to-end extraction. |
 
 *Update this table at the end of every session. One row per session.*
 
