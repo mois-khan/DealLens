@@ -46,26 +46,26 @@
 ### Infrastructure
 
 - [x] `main.py` — FastAPI app + CORS for `localhost:5173`
-- [ ] `routers/analyse.py` — route stubs (`POST /analyse`, `GET /report/{id}`)
+- [x] `routers/analyse.py` — route stubs (`POST /analyse`, `GET /report/{id}`)
 - [x] `models/report.py` — all Pydantic models matching `architecture.md` section 10
-- [ ] `services/gemini_client.py` — dual model wrapper + 3-attempt exponential backoff
-- [ ] `services/tavily_client.py` — search wrapper + 10s timeout
-- [ ] `services/serper_client.py` — search wrapper + 10s timeout
-- [ ] `services/crunchbase_client.py` — founder + startup lookup + 10s timeout
+- [x] `services/gemini_client.py` — dual model wrapper + 3-attempt exponential backoff
+- [x] `services/tavily_client.py` — search wrapper + 10s timeout
+- [x] `services/serper_client.py` — search wrapper + 10s timeout
+- [x] `services/crunchbase_client.py` — founder + startup lookup + 10s timeout
 - [x] `db/supabase_client.py` — `save_report()` and `get_report()` functions
 
 ### Pipeline Modules
 
-- [ ] **F1 — `pipeline/claim_parser.py`** ← build this first
-  - [ ] `prompts/extraction.py` prompt written
-  - [ ] Gemini Flash call + JSON parsing
-  - [ ] Returns structured claim JSON
-  - [ ] Tested on Ziple mock deck
+- [x] **F1 — `pipeline/claim_parser.py`** ← build this first
+  - [x] `prompts/extraction.py` prompt written
+  - [x] Gemini Flash call + JSON parsing
+  - [x] Returns structured claim JSON
+  - [x] Tested on Ziple mock deck
 
-- [ ] **`pipeline/extractor.py`** — PyMuPDF PDF → clean text
-  - [ ] Handles normal text PDFs
-  - [ ] Handles image-only PDFs gracefully (422, not crash)
-  - [ ] Strips boilerplate / slide headers
+- [x] **`pipeline/extractor.py`** — PyMuPDF PDF → clean text
+  - [x] Handles normal text PDFs
+  - [x] Handles image-only PDFs gracefully (422, not crash)
+  - [x] Strips boilerplate / slide headers
 
 - [ ] **F2 — `pipeline/tam_checker.py`**
   - [ ] `prompts/tam_validation.py` prompt written
