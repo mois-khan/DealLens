@@ -63,8 +63,50 @@ async def analyse_deck(file: Annotated[UploadFile, File(description="Pitch deck 
     from pipeline.claim_parser import extract_claims
     claims = await extract_claims(raw_text)
 
-    # TEMPORARY: Return claims directly so the user can verify F1 output as requested
-    return {"status": "success", "f1_claims": claims}
+    # ── Step 3: Web Research (Tavily, Serper, Crunchbase) ─────────────────────────
+    category = claims.get("category", "startup")
+    startup_name = claims.get("startup_name", "startup")
+    
+    # Run all API requests in parallel (rules.md §6)
+    tavily_task = search_tavily(f"{category} market size TAM 2025")
+    serper_task = search_serper(f"{startup_name} {category} competitors alternatives")
+    
+    cb_tasks = []
+    founders = claims.get("founders", [])
+    for f in founders:
+        if f.get("name"):
+            cb_tasks.append(get_person(f["name"]))
+            
+    # Gather search results
+    research_results = await asyncio.gather(tavily_task, serper_task, *cb_tasks)
+    tavily_results = research_results[0]
+    serper_results = research_results[1]
+    cb_results = research_results[2:]
+
+    # ── Step 4: AI Validation (F2, F4, F5) ────────────────────────────────────
+    from pipeline.tam_checker import check_tam
+    from pipeline.moat_tester import test_moat
+    from pipeline.founder_intel import test_founder
+    
+    analysis_tasks = [
+        check_tam(claims.get("market_claims", []), tavily_results),
+        test_moat(claims.get("moat_claims", []), serper_results),
+        test_founder(founders, cb_results, tavily_results)
+    ]
+    
+    verdicts = await asyncio.gather(*analysis_tasks)
+    tam_verdict = verdicts[0]
+    moat_verdict = verdicts[1]
+    founder_verdict = verdicts[2]
+
+    # TEMPORARY: Return all verdicts so the user can verify
+    return {
+        "status": "success", 
+        "f1_claims": claims,
+        "f2_tam": tam_verdict,
+        "f4_moat": moat_verdict,
+        "f5_founder": founder_verdict
+    }
 
 
 # ── GET /report/{report_id} ────────────────────────────────────────────────────

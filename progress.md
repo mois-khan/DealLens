@@ -13,6 +13,7 @@
 |---|---|---|---|
 | 1 | 30 April 2026 | Antigravity (AI) & User | Cleaned slate, set up backend structure, `.env`, `requirements.txt`, Supabase DB schema + client, and Pydantic data models. |
 | 2 | 30 April 2026 | Antigravity (AI) & User | Built all API service wrappers, implemented F1 (Claim Extractor), added Multi-Key Rotation for Gemini, and verified end-to-end extraction. |
+| 3 | 01 May 2026 | Antigravity (AI) & User | Built F2 (TAM), F4 (Moat), and F5 (Founder Intel). Debugged Gemini rate limits, switched model to 2.5 Flash, increased max tokens to 8192, enforced strict JSON mime-type, and achieved full extraction success. |
 
 *Update this table at the end of every session. One row per session.*
 
@@ -68,20 +69,20 @@
   - [x] Handles image-only PDFs gracefully (422, not crash)
   - [x] Strips boilerplate / slide headers
 
-- [ ] **F2 — `pipeline/tam_checker.py`**
-  - [ ] `prompts/tam_validation.py` prompt written
-  - [ ] Tavily search → Gemini Flash analysis
-  - [ ] Returns `{ verdict, claimed_tam, real_tam, inflation_factor, explanation, source, investor_question }`
+- [x] **F2 — `pipeline/tam_checker.py`**
+  - [x] `prompts/tam_validation.py` prompt written
+  - [x] Tavily search → Gemini Flash analysis
+  - [x] Returns `{ verdict, claimed_tam, real_tam, inflation_factor, explanation, source, investor_question }`
 
-- [ ] **F4 — `pipeline/moat_tester.py`**
-  - [ ] `prompts/moat.py` prompt written
-  - [ ] Serper competitor search → Gemini Flash analysis
-  - [ ] Returns `{ verdict, claimed_moat, explanation, investor_question, competitors[] }`
+- [x] **F4 — `pipeline/moat_tester.py`**
+  - [x] `prompts/moat.py` prompt written
+  - [x] Serper competitor search → Gemini Flash analysis
+  - [x] Returns `{ verdict, claimed_moat, explanation, investor_question, competitors[] }`
 
-- [ ] **F5 — `pipeline/founder_intel.py`**
-  - [ ] `prompts/founder.py` prompt written
-  - [ ] Tavily + Crunchbase parallel fetch → Gemini Flash synthesis
-  - [ ] Returns `{ name, role, domain_fit, domain_fit_reason, verdict, past_ventures[], credibility_signals[], red_flags[], public_summary }`
+- [x] **F5 — `pipeline/founder_intel.py`**
+  - [x] `prompts/founder.py` prompt written
+  - [x] Tavily + Crunchbase parallel fetch → Gemini Flash synthesis
+  - [x] Returns `{ name, role, domain_fit, domain_fit_reason, verdict, past_ventures[], credibility_signals[], red_flags[], public_summary }`
 
 - [ ] **F7 — `pipeline/question_gen.py`** ← never cut
   - [ ] `prompts/questions.py` prompt written
@@ -233,8 +234,7 @@
 
 ## Known Issues
 
-*None yet — add issues here as they are discovered.*
-
+- **[Pipeline / F1]** PyMuPDF only extracts embedded text. Competitor names or data presented strictly as flattened images/logos (without text layers) are missed by the extractor. Workaround: Accept limitation for hackathon; future enhancement to use Gemini Vision API for slide OCR.
 <!-- Format:
 - **[Component/Module]** Description of issue. Workaround if any.
 -->

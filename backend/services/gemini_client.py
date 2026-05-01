@@ -49,9 +49,9 @@ def _get_next_client() -> genai.Client:
 
 # ── Model Constants ────────────────────────────────────────────────────────────
 
-# Using 3.1 Flash Lite for the highest free-tier quota (500 RPD)
-FLASH      = "gemini-3.1-flash-lite-preview"
-FLASH_LITE = "gemini-3.1-flash-lite-preview"
+# Using 2.5 Flash as the stable workhorse model
+FLASH      = "gemini-2.5-flash"
+FLASH_LITE = "gemini-2.5-flash"
 
 
 def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
@@ -63,6 +63,7 @@ def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
         system_instruction=system,
         max_output_tokens=max_tokens,
         temperature=0.1,
+        response_mime_type="application/json",
     )
 
     for attempt in range(len(_CLIENT_POOL) + 1):  # Try each key at least once
@@ -79,14 +80,17 @@ def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
             is_retryable = (
                 "429" in err_str
                 or "503" in err_str
+                or "403" in err_str
                 or "quota" in err_str.lower()
                 or "RESOURCE_EXHAUSTED" in err_str
                 or "UNAVAILABLE" in err_str
+                or "PERMISSION_DENIED" in err_str
             )
             
             if is_retryable and attempt < len(_CLIENT_POOL):
                 # We have more keys to try! Rotate and try again immediately.
-                logger.warning(f"[Gemini] Key {_CURRENT_KEY_INDEX} busy/limited. Rotating to next key (Attempt {attempt+1})...")
+                logger.error(f"[Gemini] Key {_CURRENT_KEY_INDEX} failed. Error: {err_str}")
+                logger.warning(f"[Gemini] Rotating to next key (Attempt {attempt+1})...")
                 continue
             elif is_retryable:
                 # We've exhausted all keys in this burst. Final wait.
@@ -104,7 +108,7 @@ async def call_gemini(
     system: str,
     user: str,
     model: str = FLASH,
-    max_tokens: int = 2048,
+    max_tokens: int = 8192,
 ) -> str:
     """Async wrapper that runs the blocking call in a thread pool."""
     return await asyncio.to_thread(_call_sync, model, system, user, max_tokens)
