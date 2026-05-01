@@ -83,30 +83,65 @@ async def analyse_deck(file: Annotated[UploadFile, File(description="Pitch deck 
     serper_results = research_results[1]
     cb_results = research_results[2:]
 
-    # ── Step 4: AI Validation (F2, F4, F5) ────────────────────────────────────
+    # ── Step 4: AI Analysis (F2, F4, F5) ──────────────────────────────────────
     from pipeline.tam_checker import check_tam
     from pipeline.moat_tester import test_moat
     from pipeline.founder_intel import test_founder
     
-    analysis_tasks = [
+    # Run analysis modules in parallel
+    analysis_results = await asyncio.gather(
         check_tam(claims.get("market_claims", []), tavily_results),
         test_moat(claims.get("moat_claims", []), serper_results),
-        test_founder(founders, cb_results, tavily_results)
-    ]
+        test_founder(claims.get("founders", []), cb_results, tavily_results)
+    )
     
-    verdicts = await asyncio.gather(*analysis_tasks)
-    tam_verdict = verdicts[0]
-    moat_verdict = verdicts[1]
-    founder_verdict = verdicts[2]
+    tam_r = analysis_results[0]
+    moat_r = analysis_results[1]
+    founder_r = analysis_results[2]
 
-    # TEMPORARY: Return all verdicts so the user can verify
-    return {
-        "status": "success", 
-        "f1_claims": claims,
-        "f2_tam": tam_verdict,
-        "f4_moat": moat_verdict,
-        "f5_founder": founder_verdict
+    # ── Step 5: Synthesis (F7, F8) ─────────────────────────────────────────────
+    from pipeline.question_gen import generate_questions
+    from pipeline.scorecard import generate_scorecard
+    
+    # Bundle context for synthesis
+    full_context = {
+        "claims": claims,
+        "tam_analysis": tam_r,
+        "moat_analysis": moat_r,
+        "founder_analysis": founder_r
     }
+    
+    synthesis_results = await asyncio.gather(
+        generate_questions(full_context),
+        generate_scorecard(full_context)
+    )
+    
+    questions = synthesis_results[0]
+    scorecard = synthesis_results[1]
+
+    # ── Step 6: Final Packing & Persistence ───────────────────────────────────
+    # Map into the official Pydantic model (models/report.py)
+    report_data = {
+        "report_id": "temp", # Will be replaced after saving
+        "file_name": filename,
+        "scorecard": scorecard,
+        "founder": founder_r,
+        "claims": {
+            "tam": tam_r,
+            "traction": {"flags": []},  # F3 Cut for schedule
+            "moat": moat_r,
+            "financials": {"flags": []} # F6 Cut for schedule
+        },
+        "competitors": moat_r.get("competitors", []),
+        "questions": questions
+    }
+
+    # Save to Supabase
+    report_id = await save_report(report_data)
+    report_data["report_id"] = report_id
+
+    logger.info(f"[analyse] Analysis complete for {filename}. Report ID: {report_id}")
+    return report_data
 
 
 # ── GET /report/{report_id} ────────────────────────────────────────────────────

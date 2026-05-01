@@ -84,15 +84,15 @@
   - [x] Tavily + Crunchbase parallel fetch → Gemini Flash synthesis
   - [x] Returns `{ name, role, domain_fit, domain_fit_reason, verdict, past_ventures[], credibility_signals[], red_flags[], public_summary }`
 
-- [ ] **F7 — `pipeline/question_gen.py`** ← never cut
-  - [ ] `prompts/questions.py` prompt written
-  - [ ] Gemini Flash call on full analysis context
-  - [ ] Returns exactly 5 questions with all required fields
+- [x] **F7 — `pipeline/question_gen.py`** ← never cut
+  - [x] `prompts/questions.py` prompt written
+  - [x] Gemini Flash call on full analysis context
+  - [x] Returns exactly 5 questions with all required fields
 
-- [ ] **F8 — `pipeline/scorecard.py`**
-  - [ ] `prompts/scorecard.py` prompt written
-  - [ ] Gemini Flash-Lite call (not Flash)
-  - [ ] Returns `{ startup_name, overall, dimensions{}, top_flags[], strengths[] }`
+- [x] **F8 — `pipeline/scorecard.py`**
+  - [x] `prompts/scorecard.py` prompt written
+  - [x] Gemini Flash-Lite call (not Flash)
+  - [x] Returns `{ startup_name, overall, dimensions{}, top_flags[], strengths[] }`
 
 - [ ] **F3 — `pipeline/traction_validator.py`** *(cut if behind schedule)*
   - [ ] `prompts/traction.py` prompt written
@@ -106,13 +106,13 @@
 
 ### Integration
 
-- [ ] `asyncio.gather()` wiring — Tavily + Serper + Crunchbase fire in parallel
-- [ ] Full pipeline assembled in `routers/analyse.py`
-- [ ] Report JSON saved to Supabase on completion
-- [ ] `GET /report/{id}` fetches from Supabase correctly
-- [ ] End-to-end test: real PDF in → full report JSON out
-- [ ] Error handling: all module failures return correct status codes
-- [ ] Retry logic verified: 429 from Gemini does not crash the request
+- [x] `asyncio.gather()` wiring — Tavily + Serper + Crunchbase fire in parallel
+- [x] Full pipeline assembled in `routers/analyse.py`
+- [x] Report JSON saved to Supabase on completion
+- [x] `GET /report/{id}` fetches from Supabase correctly
+- [x] End-to-end test: real PDF in → full report JSON out
+- [x] Error handling: all module failures return correct status codes
+- [x] Retry logic verified: 429 from Gemini does not crash the request
 
 ---
 
