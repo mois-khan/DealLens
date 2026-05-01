@@ -13,7 +13,7 @@
 |---|---|---|---|
 | 1 | 30 April 2026 | Antigravity (AI) & User | Cleaned slate, set up backend structure, `.env`, `requirements.txt`, Supabase DB schema + client, and Pydantic data models. |
 | 2 | 30 April 2026 | Antigravity (AI) & User | Built all API service wrappers, implemented F1 (Claim Extractor), added Multi-Key Rotation for Gemini, and verified end-to-end extraction. |
-| 3 | 01 May 2026 | Antigravity (AI) & User | Built F2 (TAM), F4 (Moat), and F5 (Founder Intel). Debugged Gemini rate limits, switched model to 2.5 Flash, increased max tokens to 8192, enforced strict JSON mime-type, and achieved full extraction success. |
+| 3 | 01 May 2026 | Antigravity (AI) & User | Built F2, F4, F5, F7, and F8. Debugged Gemini rate limits, upgraded to 2.5 Flash with 8k token limit, and achieved full end-to-end report generation (AirBnB test: Success). |
 
 *Update this table at the end of every session. One row per session.*
 
