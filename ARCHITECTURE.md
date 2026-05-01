@@ -810,14 +810,14 @@ async def get_report(report_id: str) -> dict | None:
 
 | Module | File | Priority | APIs used | Est. time |
 |---|---|---|---|---|
-| F1 — Claim Extractor | `claim_parser.py` | **Build first** | Gemini Flash | 2h |
-| F2 — TAM Reality Check | `tam_checker.py` | **Must ship** | Tavily → Gemini Flash | 2h |
-| F4 — Moat Stress Test | `moat_tester.py` | **Must ship** | Serper → Gemini Flash | 3h |
-| F5 — Founder Intel | `founder_intel.py` | **Must ship** | Tavily + Crunchbase → Gemini Flash | 2.5h |
-| F7 — Question Generator | `question_gen.py` | **Never cut** | Gemini Flash | 2h |
-| F8 — Deal Scorecard | `scorecard.py` | **Must ship** | Gemini Flash-Lite | 1.5h |
-| F3 — Traction Validator | `traction_validator.py` | Cut if needed | Gemini Flash only | 1.5h |
-| F6 — Financial Flags | `financial_flags.py` | Cut if needed | Gemini Flash only | 1.5h |
+| F1 — Claim Extractor | `claim_parser.py` | **Build first** | Gemini 2.5 Flash | 2h |
+| F2 — TAM Reality Check | `tam_checker.py` | **Must ship** | Tavily → Gemini 2.5 Flash | 2h |
+| F4 — Moat Stress Test | `moat_tester.py` | **Must ship** | Serper → Gemini 2.5 Flash | 3h |
+| F5 — Founder Intel | `founder_intel.py` | **Must ship** | Tavily + Crunchbase → Gemini 2.5 Flash | 2.5h |
+| F7 — Question Generator | `question_gen.py` | **Never cut** | Gemini 2.5 Flash | 2h |
+| F8 — Deal Scorecard | `scorecard.py` | **Must ship** | Gemini 2.5 Flash | 1.5h |
+| F3 — Traction Validator | `traction_validator.py` | Cut if needed | Gemini 2.5 Flash only | 1.5h |
+| F6 — Financial Flags | `financial_flags.py` | Cut if needed | Gemini 2.5 Flash only | 1.5h |
 
 **If behind schedule:** Merge F3 and F6 into the scorecard as text flags. Never cut F7.
 
