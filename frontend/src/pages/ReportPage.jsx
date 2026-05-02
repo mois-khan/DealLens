@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Sidebar from '../components/layout/Sidebar';
 import ReportCard from '../components/shared/ReportCard';
 import StatCard from '../components/shared/StatCard';
@@ -24,6 +24,18 @@ export default function ReportPage({ report, filename, activeSection, onNavigate
     return data[`claimed_${key}`] || titles[key] || key;
   };
 
+  const [copied, setCopied] = useState(false);
+
+  const handleExportPDF = () => {
+    window.print();
+  };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="min-h-screen bg-bg-base flex">
       <Sidebar active={activeSection} onNavigate={onNavigate} filename={filename} />
@@ -42,8 +54,12 @@ export default function ReportPage({ report, filename, activeSection, onNavigate
               </p>
             </div>
             <div className="flex gap-3">
-              <Button variant="ghost">Export PDF</Button>
-              <Button variant="primary">Share Report</Button>
+              <Button variant="ghost" onClick={handleExportPDF}>
+                Export PDF
+              </Button>
+              <Button variant="primary" onClick={handleShare}>
+                {copied ? '✓ Link Copied' : 'Share Report'}
+              </Button>
             </div>
           </div>
 
