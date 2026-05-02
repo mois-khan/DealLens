@@ -1,122 +1,79 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React from 'react';
+import Button from './components/shared/Button';
+import Skeleton from './components/shared/Skeleton';
+import { mockReport } from './data/mockReport';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="min-h-screen bg-bg-base p-8 text-text-secondary">
+      <div className="max-w-4xl mx-auto space-y-8">
+        
+        {/* Header */}
+        <div className="border-b border-white/5 pb-4">
+          <h1 className="text-3xl font-sans font-semibold tracking-tight text-text-primary">
+            Deal<span className="text-accent-light">Lens</span> Preview
+          </h1>
+          <p className="mt-2 text-sm">Testing the design system components with the AirBnB mock data.</p>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
 
-      <div className="ticks"></div>
+        {/* Buttons Section */}
+        <section className="space-y-4">
+          <h2 className="text-xl font-sans font-semibold tracking-tight text-text-primary">1. Buttons</h2>
+          <div className="flex gap-4 items-center flex-wrap">
+            <Button variant="primary">Primary Action</Button>
+            <Button variant="secondary">Secondary</Button>
+            <Button variant="ghost">Ghost Link</Button>
+            <Button variant="primary" loading>Uploading</Button>
+          </div>
+        </section>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        {/* Skeleton Section */}
+        <section className="space-y-4">
+          <h2 className="text-xl font-sans font-semibold tracking-tight text-text-primary">2. Loading State (Skeleton)</h2>
+          <div className="shadow-card rounded-xl bg-bg-surface p-5 space-y-3">
+            <Skeleton className="h-6 w-1/3" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-4/6" />
+          </div>
+        </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        {/* Mock Data Section */}
+        <section className="space-y-4">
+          <h2 className="text-xl font-sans font-semibold tracking-tight text-text-primary">3. Mock Data Rendered</h2>
+          <div className="shadow-card rounded-xl bg-bg-surface p-5">
+            <p className="text-[10px] font-mono font-medium uppercase tracking-[0.14em] text-accent-light mb-2">
+              STARTUP NAME
+            </p>
+            <p className="text-2xl font-mono font-medium text-text-primary mb-4">
+              {mockReport.scorecard.startup_name}
+            </p>
+
+            <p className="text-[10px] font-mono font-medium uppercase tracking-[0.14em] text-accent-light mb-2">
+              OVERALL SCORE
+            </p>
+            <p className="text-4xl font-mono font-medium text-verdict-red-text mb-6">
+              {mockReport.scorecard.overall} <span className="text-text-faint text-xl">/ 10</span>
+            </p>
+
+            <p className="text-[10px] font-mono font-medium uppercase tracking-[0.14em] text-accent-light mb-2">
+              TOP QUESTIONS
+            </p>
+            <ul className="space-y-3">
+              {mockReport.questions.slice(0, 3).map((q, i) => (
+                <li key={i} className="border-l-2 border-accent pl-3">
+                  <p className="text-sm font-sans text-text-secondary">
+                    <strong className="text-text-primary">[{q.category}]</strong> {q.question}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;
