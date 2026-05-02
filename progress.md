@@ -14,7 +14,7 @@
 | 1 | 30 April 2026 | Antigravity (AI) & User | Cleaned slate, set up backend structure, `.env`, `requirements.txt`, Supabase DB schema + client, and Pydantic data models. |
 | 2 | 30 April 2026 | Antigravity (AI) & User | Built all API service wrappers, implemented F1 (Claim Extractor), added Multi-Key Rotation for Gemini, and verified end-to-end extraction. |
 | 3 | 01 May 2026 | Antigravity (AI) & User | Built F2, F4, F5, F7, and F8. Debugged Gemini rate limits, upgraded to 2.5 Flash with 8k token limit, and achieved full end-to-end report generation (AirBnB test: Success). |
-| 4 | 02 May 2026 | Antigravity (AI) & User | Initialized Vite + React frontend, configured Tailwind design system, created shared components (Button, Skeleton), and set up mock data. |
+| 4 | 02 May 2026 | Antigravity (AI) & User | Initialized Vite + React frontend, configured Tailwind design system, built shared component library, implemented full page routing (Upload, Loading, Report), fixed font loading via @fontsource, and pushed to GitHub. |
 
 *Update this table at the end of every session. One row per session.*
 
@@ -26,7 +26,7 @@
 - [x] Tailwind configured with design tokens from `design.md` section 2
 - [x] Geist font loaded in `index.html`
 - [x] `shimmer` and `fadeIn` animations added to `tailwind.config.js`
-- [ ] React Router installed and configured
+- [x] React Router installed and configured
 - [x] Axios installed
 
 - [x] FastAPI project initialised at `backend/`
@@ -121,7 +121,7 @@
 
 ### Infrastructure
 
-- [ ] `App.jsx` — React Router with `/`, `/loading`, `/report/:id`, `*` routes
+- [x] `App.jsx` — React Router with `/`, `/loading`, `/report/:id`, `*` routes
 - [x] `data/mockReport.js` — full mock JSON matching `architecture.md` section 10 schema
 - [ ] `api/analyse.js` — Axios `POST /analyse` (multipart) and `GET /report/:id`
 - [ ] `hooks/useScrollSpy.js` — IntersectionObserver for sidebar highlight
@@ -130,33 +130,33 @@
 
 - [x] `Skeleton.jsx` — shimmer animation, accepts `className`
 - [ ] `ErrorBoundary.jsx` — wraps sections, renders `<SectionError>` fallback
-- [ ] `VerdictBadge.jsx` — derives colour from verdict enum, never hardcoded
-- [ ] `ScoreBar.jsx` — derives colour from score value (green/amber/red)
-- [ ] `StatCard.jsx` — eyebrow + value (font-mono) + label
-- [ ] `ReportCard.jsx` — eyebrow + title + children shell
-- [ ] `DataTable.jsx` — left-aligned, hover-only rows, overflow-x-auto
-- [ ] `ThreatCell.jsx` — threat level badge with semantic colour
-- [ ] `ExpandableRow.jsx` — toggle open/close for table row details
-- [ ] `QuestionCard.jsx` — collapsible, closed by default, all 5 fields
+- [x] `VerdictBadge.jsx` — derives colour from verdict enum, never hardcoded
+- [x] `ScoreBar.jsx` — derives colour from score value (green/amber/red)
+- [x] `StatCard.jsx` — eyebrow + value (font-mono) + label
+- [x] `ReportCard.jsx` — eyebrow + title + children shell
+- [x] `DataTable.jsx` — left-aligned, hover-only rows, overflow-x-auto
+- [x] `ThreatCell.jsx` — threat level badge with semantic colour
+- [x] `ExpandableRow.jsx` — toggle open/close for table row details
+- [x] `QuestionCard.jsx` — collapsible, closed by default, all 5 fields
 
 ### Pages & Sections
 
-- [ ] **`UploadPage.jsx`**
-  - [ ] Idle state — drop zone, trust signals
-  - [ ] Drag-over state — border + bg swap instantly
-  - [ ] File-selected state — filename, size, Analyse button
+- [x] **`UploadPage.jsx`**
+  - [x] Idle state — drop zone, trust signals
+  - [x] Drag-over state — border + bg swap instantly
+  - [x] File-selected state — filename, size, Analyse button
   - [ ] Uploading state — spinner, disabled, pulse border
   - [ ] Error state — red border, message, auto-clears after 3s
-  - [ ] Navigates to `/loading` immediately on upload success
+  - [x] Navigates to `/loading` immediately on upload success
 
-- [ ] **`LoadingPage.jsx`**
-  - [ ] 5 steps with done/active/pending visual states
+- [x] **`LoadingPage.jsx`**
+  - [x] 5 steps with done/active/pending visual states
   - [ ] Optimistic step timing (steps 1–4 advance 2–3s early)
   - [ ] Smooth progress bar (`transition-all duration-1000`)
   - [ ] Rotating insight card every 8 seconds
-  - [ ] Navigates to `/report/:id` on API response
+  - [x] Navigates to `/report/:id` on API response
 
-- [ ] **`ReportPage.jsx`** — sidebar + scroll layout shell
+- [x] **`ReportPage.jsx`** — sidebar + scroll layout shell
   - [ ] Fixed sidebar (`w-56`) collapses to hamburger at `md:`
   - [ ] Each section wrapped in `<ErrorBoundary>`
   - [ ] `useScrollSpy` updates sidebar active state on scroll
