@@ -9,8 +9,13 @@
   }
 
   body {
+    font-family: 'Geist Sans', 'Inter', system-ui, sans-serif;
     background-color: theme('colors.bg-base');
     color: theme('colors.text-secondary');
+  }
+
+  .font-mono {
+    font-family: 'Geist Mono', ui-monospace, monospace;
   }
 }
 

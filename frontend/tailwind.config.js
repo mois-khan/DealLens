@@ -57,8 +57,8 @@ export default {
         'score-track': '#1f2023',
       },
       fontFamily: {
-        sans:  ['Geist', 'Inter', 'system-ui', 'sans-serif'],
-        mono:  ['Geist Mono', 'Berkeley Mono', 'ui-monospace', 'monospace'],
+        sans:  ['Geist Sans', 'Inter', 'system-ui', 'sans-serif'],
+        mono:  ['Geist Mono', 'ui-monospace', 'monospace'],
       },
       keyframes: {
         shimmer: {
