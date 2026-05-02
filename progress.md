@@ -14,6 +14,7 @@
 | 1 | 30 April 2026 | Antigravity (AI) & User | Cleaned slate, set up backend structure, `.env`, `requirements.txt`, Supabase DB schema + client, and Pydantic data models. |
 | 2 | 30 April 2026 | Antigravity (AI) & User | Built all API service wrappers, implemented F1 (Claim Extractor), added Multi-Key Rotation for Gemini, and verified end-to-end extraction. |
 | 3 | 01 May 2026 | Antigravity (AI) & User | Built F2, F4, F5, F7, and F8. Debugged Gemini rate limits, upgraded to 2.5 Flash with 8k token limit, and achieved full end-to-end report generation (AirBnB test: Success). |
+| 4 | 02 May 2026 | Antigravity (AI) & User | Initialized Vite + React frontend, configured Tailwind design system, created shared components (Button, Skeleton), and set up mock data. |
 
 *Update this table at the end of every session. One row per session.*
 
@@ -21,12 +22,12 @@
 
 ## Environment Setup
 
-- [ ] Node.js + Vite project initialised at `frontend/`
-- [ ] Tailwind configured with design tokens from `design.md` section 2
-- [ ] Geist font loaded in `index.html`
-- [ ] `shimmer` and `fadeIn` animations added to `tailwind.config.js`
+- [x] Node.js + Vite project initialised at `frontend/`
+- [x] Tailwind configured with design tokens from `design.md` section 2
+- [x] Geist font loaded in `index.html`
+- [x] `shimmer` and `fadeIn` animations added to `tailwind.config.js`
 - [ ] React Router installed and configured
-- [ ] Axios installed
+- [x] Axios installed
 
 - [x] FastAPI project initialised at `backend/`
 - [x] `requirements.txt` installed in virtualenv
@@ -121,13 +122,13 @@
 ### Infrastructure
 
 - [ ] `App.jsx` — React Router with `/`, `/loading`, `/report/:id`, `*` routes
-- [ ] `data/mockReport.js` — full mock JSON matching `architecture.md` section 10 schema
+- [x] `data/mockReport.js` — full mock JSON matching `architecture.md` section 10 schema
 - [ ] `api/analyse.js` — Axios `POST /analyse` (multipart) and `GET /report/:id`
 - [ ] `hooks/useScrollSpy.js` — IntersectionObserver for sidebar highlight
 
 ### Shared Components (`components/shared/`)
 
-- [ ] `Skeleton.jsx` — shimmer animation, accepts `className`
+- [x] `Skeleton.jsx` — shimmer animation, accepts `className`
 - [ ] `ErrorBoundary.jsx` — wraps sections, renders `<SectionError>` fallback
 - [ ] `VerdictBadge.jsx` — derives colour from verdict enum, never hardcoded
 - [ ] `ScoreBar.jsx` — derives colour from score value (green/amber/red)
