@@ -54,14 +54,18 @@ async def analyse_deck(file: Annotated[UploadFile, File(description="Pitch deck 
     from pipeline.extractor import extract_text
     raw_text = extract_text(pdf_bytes)
     
-    if not raw_text.strip():
-        raise HTTPException(status_code=422, detail="Could not extract text. PDF may be image-based.")
+    # AI-OCR Fallback: If PyMuPDF returns empty (image-based PDF), we pass the 
+    # raw bytes to Gemini's vision engine instead.
+    extraction_input = raw_text if raw_text.strip() else pdf_bytes
     
-    logger.info(f"[analyse] PDF received: '{filename}' ({len(pdf_bytes)} bytes). Text extracted.")
+    if not raw_text.strip():
+        logger.info(f"[analyse] No text extracted via PyMuPDF. Falling back to Gemini AI-OCR for '{filename}'.")
+    else:
+        logger.info(f"[analyse] PDF received: '{filename}' ({len(pdf_bytes)} bytes). Text extracted via PyMuPDF.")
 
     # ── Step 2: Extract claims (Gemini Flash - F1) ─────────────────────────────
     from pipeline.claim_parser import extract_claims
-    claims = await extract_claims(raw_text)
+    claims = await extract_claims(extraction_input)
 
     # ── Step 3: Web Research (Tavily, Serper, Crunchbase) ─────────────────────────
     category = claims.get("category", "startup")

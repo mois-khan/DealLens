@@ -11,8 +11,8 @@ export async function analyseDeck(file) {
     formData,
     { 
       headers: { 'Content-Type': 'multipart/form-data' },
-      // Optional timeout - backend can take up to 20-30s depending on Gemini
-      timeout: 60000 
+      // Optional timeout - backend can take up to 20-30s depending on Gemini, but with retry rotation it can take up to 5 mins
+      timeout: 300000 
     }
   );
 

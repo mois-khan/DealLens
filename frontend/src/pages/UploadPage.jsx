@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 /**
  * Landing page with drag-and-drop file upload.
@@ -6,6 +6,15 @@ import React, { useState } from 'react';
  */
 export default function UploadPage({ onUpload, error }) {
   const [dragging, setDragging] = useState(false);
+  const [localError, setLocalError] = useState(error);
+
+  useEffect(() => {
+    if (error) {
+      setLocalError(error);
+      const timer = setTimeout(() => setLocalError(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-bg-base flex flex-col items-center justify-center px-6">
@@ -34,7 +43,7 @@ export default function UploadPage({ onUpload, error }) {
           w-full max-w-lg rounded-2xl border-2 border-dashed
           flex flex-col items-center justify-center gap-4 py-16 px-8
           transition-colors duration-150 cursor-pointer
-          ${error 
+          ${localError 
             ? 'border-verdict-red-border bg-verdict-red-bg/10' 
             : dragging
               ? 'border-accent bg-accent/5'
@@ -47,10 +56,10 @@ export default function UploadPage({ onUpload, error }) {
         </div>
         <div className="text-center">
           <p className="text-sm font-sans font-medium text-text-secondary">
-            {error ? <span className="text-verdict-red-text">{error}</span> : "Drop your pitch deck here"}
+            {localError ? <span className="text-verdict-red-text">{localError}</span> : "Drop your pitch deck here"}
           </p>
           <p className="text-xs font-mono text-text-faint mt-1">
-            {error ? "Please try again." : "PDF only · Max 20MB"}
+            {localError ? "Please try again." : "PDF only · Max 20MB"}
           </p>
         </div>
         <label className="cursor-pointer">

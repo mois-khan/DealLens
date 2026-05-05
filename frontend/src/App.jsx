@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useNavigate, useParams } from 'react-rout
 import UploadPage from './pages/UploadPage';
 import LoadingPage from './pages/LoadingPage';
 import ReportPage from './pages/ReportPage';
+import NotFound from './pages/NotFound';
 import { mockReport } from './data/mockReport';
 import { analyseDeck, getReport } from './api/analyse';
 
@@ -64,6 +65,7 @@ function DealLensFlow() {
           />
         } 
       />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

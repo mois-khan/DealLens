@@ -4,17 +4,17 @@ from services.gemini_client import call_gemini, parse_json
 
 logger = logging.getLogger(__name__)
 
-async def extract_claims(raw_text: str) -> dict:
+async def extract_claims(raw_text: str | bytes) -> dict:
     """
-    Passes the raw PDF text to Gemini to extract structured claims.
+    Passes the raw PDF text (or bytes) to Gemini to extract structured claims.
     Returns the parsed JSON dictionary.
     Handles empty extraction gracefully.
     """
-    if not raw_text.strip():
+    if isinstance(raw_text, str) and not raw_text.strip():
         logger.warning("[claim_parser] Received empty text. Returning empty claims.")
         return _empty_claims()
 
-    logger.info("[claim_parser] Sending text to Gemini for claim extraction...")
+    logger.info("[claim_parser] Sending data to Gemini for claim extraction (AI-OCR fallback enabled)...")
     
     # We use Flash for complex reasoning (rules.md §7)
     try:

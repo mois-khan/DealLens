@@ -130,9 +130,17 @@ def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
     for attempt in range(max_attempts):
         client = _get_next_client()
         try:
+            # Handle multi-modal input (PDF bytes fallback)
+            content_parts = user
+            if isinstance(user, bytes):
+                content_parts = [
+                    types.Part.from_bytes(data=user, mime_type="application/pdf"),
+                    "Extract all text and structured data from this PDF."
+                ]
+
             response = client.models.generate_content(
                 model=model_name,
-                contents=user,
+                contents=content_parts,
                 config=config,
             )
             logger.info(f"[Gemini] ✓ Success with model={model_name} on attempt {attempt+1}")

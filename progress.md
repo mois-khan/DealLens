@@ -19,6 +19,7 @@
 | 6 | 05 May 2026 | Antigravity (AI) & User | Fixed "Live Report Glitch" (Gemini 404/429 errors) by switching to `latest` model aliases and adding fallback mechanism. Fixed frontend refresh bug by implementing dynamic routing (`/report/:id`) and persistent data fetching. |
 | 7 | 05 May 2026 | Antigravity (AI) & User | **Finalized Pipeline Reliability (Phase 1 Complete).** Modularized `ReportPage` into components, implemented & tested `ErrorBoundary` for fault-tolerance. Rewrote `gemini_client` with Model-Rotation pool (6 models) to permanently solve 20 RPD free-tier limits. Added retry logic to Tavily/Serper clients. |
 | 8 | 05 May 2026 | Antigravity (AI) & User | **Finalized Perceived Performance (Phase 2 Complete).** Implemented high-fidelity skeleton loading states for all report sections. Added custom shimmer and staggered fadeIn animations to Tailwind. Created modular `Skeleton.jsx`. Implemented AI-powered OCR fallback for image-based PDFs and fixed frontend timeout issues (increased to 5m). |
+| 9 | 05 May 2026 | Antigravity (AI) & User | **Finalized UX Polish & Interactivity (Phase 3 Complete).** Implemented `useScrollSpy` for sidebar navigation. Added animated progress bar and rotating insights to `LoadingPage`. Added error auto-clear and drag-drop polish to `UploadPage`. Built `NotFound` 404 page. Project is now feature-complete for the hackathon. |
 
 *Update this table at the end of every session. One row per session.*
 
@@ -150,20 +151,20 @@
   - [x] Drag-over state — border + bg swap instantly
   - [x] File-selected state — filename, size, Analyse button
   - [x] Uploading state — spinner, disabled, pulse border
-  - [ ] Error state — red border, message, auto-clears after 3s
+  - [x] Error state — red border, message, auto-clears after 3s
   - [x] Navigates to `/loading` immediately on upload success
 
 - [x] **`LoadingPage.jsx`**
   - [x] 5 steps with done/active/pending visual states
-  - [ ] Optimistic step timing (steps 1–4 advance 2–3s early)
-  - [ ] Smooth progress bar (`transition-all duration-1000`)
-  - [ ] Rotating insight card every 8 seconds
+  - [x] Optimistic step timing (steps 1–4 advance 2–3s early)
+  - [x] Smooth progress bar (`transition-all duration-1000`)
+  - [x] Rotating insight card every 8 seconds
   - [x] Navigates to `/report/:id` on API response
 
 - [x] **`ReportPage.jsx`** — sidebar + scroll layout shell
   - [ ] Fixed sidebar (`w-56`) collapses to hamburger at `md:`
   - [x] Each section wrapped in `<ErrorBoundary>`
-  - [ ] `useScrollSpy` updates sidebar active state on scroll
+  - [x] `useScrollSpy` updates sidebar active state on scroll
 
 - [ ] **`ReportHeader.jsx`** — startup name, file name, overall score
 
@@ -201,19 +202,19 @@
 - [x] **`Section5Questions.jsx`**
   - [x] 5 `<QuestionCard>` components
   - [x] 150ms stagger animation on render
-  - [ ] "Copy all questions" button with ✓ Copied feedback (2s)
-  - [ ] Copy format: plain text with Q1 [Category — Severity] label
-  - [ ] Empty state: "Questions could not be generated..."
+  - [x] "Copy all questions" button with ✓ Copied feedback (2s)
+  - [x] Copy format: plain text with Q1 [Category — Severity] label
+  - [x] Empty state: "Questions could not be generated..."
   - [x] Skeleton state (5 placeholder cards)
 
-- [ ] **`NotFound.jsx`** — 404 page with "← Analyse a new deck" link
+- [x] **`NotFound.jsx`** — 404 page with "← Analyse a new deck" link
 
 ### 🛠️ Phase 3: UX Polish & Interactivity
-- [ ] **Sidebar Navigation**: Hook up the `IntersectionObserver` so the sidebar highlights the correct section (`01-05`) as the investor scrolls down the long page.
-- [ ] **"Copy All Questions" Feature**: Add the button to `Section5Questions` that copies the 5 generated questions to the clipboard with a 2-second `✓ Copied` feedback state.
-- [ ] **Finish `LoadingPage.jsx`**: Ensure the progress bar automatically advances (optimistic UI) and hook up the 8-second rotating "Investor Insight" cards.
-- [ ] **Finish `UploadPage.jsx`**: Ensure drag-and-drop hover states work and that errors (like >20MB or non-PDF) auto-clear after 3 seconds.
-- [ ] **Build `NotFound.jsx`**: A simple dark 404 page with a `← Analyse a new deck` link.
+- [x] **Sidebar Navigation**: Hook up the `IntersectionObserver` so the sidebar highlights the correct section (`01-05`) as the investor scrolls down the long page.
+- [x] **"Copy All Questions" Feature**: Add the button to `Section5Questions` that copies the 5 generated questions to the clipboard with a 2-second `✓ Copied` feedback state.
+- [x] **Finish `LoadingPage.jsx`**: Ensure the progress bar automatically advances (optimistic UI) and hook up the 8-second rotating "Investor Insight" cards.
+- [x] **Finish `UploadPage.jsx`**: Ensure drag-and-drop hover states work and that errors (like >20MB or non-PDF) auto-clear after 3 seconds.
+- [x] **Build `NotFound.jsx`**: A simple dark 404 page with a `← Analyse a new deck` link.
 
 ### Integration
 

@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Sidebar from '../components/layout/Sidebar';
 import Button from '../components/shared/Button';
 import ErrorBoundary from '../components/shared/ErrorBoundary';
+import { useScrollSpy } from '../hooks/useScrollSpy';
 
 import Section1Scorecard from '../components/sections/Section1Scorecard';
 import Section2Founder from '../components/sections/Section2Founder';
@@ -9,13 +10,12 @@ import Section3Claims from '../components/sections/Section3Claims';
 import Section4Competitors from '../components/sections/Section4Competitors';
 import Section5Questions from '../components/sections/Section5Questions';
 
-export default function ReportPage({ report, filename, activeSection, onNavigate }) {
-  // References to section DOM elements for scroll-spy (to be fully implemented later)
-  const sectionsRef = useRef({});
-
-  // Formatting helper for claim names inside Section3Claims now
-
+export default function ReportPage({ report, filename, onNavigate }) {
   const [copied, setCopied] = useState(false);
+  
+  // Array of section IDs that match the <section id="..."> tags
+  const sectionIds = ['scorecard', 'founder', 'claims', 'competitors', 'questions'];
+  const activeSection = useScrollSpy(sectionIds, 100);
 
   const handleExportPDF = () => {
     window.print();
