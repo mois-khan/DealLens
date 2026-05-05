@@ -2,9 +2,23 @@ import React from 'react';
 import ReportCard from '../shared/ReportCard';
 import StatCard from '../shared/StatCard';
 import ScoreBar from '../shared/ScoreBar';
+import Skeleton from '../shared/Skeleton';
 
 export default function Section1Scorecard({ scorecard }) {
-  if (!scorecard) return null;
+  if (!scorecard) {
+    return (
+      <ReportCard eyebrow="01 — Scorecard" title="Deal Scorecard">
+        <div className="space-y-4 p-5">
+          <div className="grid grid-cols-3 gap-3">
+            {[1, 2, 3].map(i => <Skeleton key={i} className="h-20 rounded-xl" />)}
+          </div>
+          <div className="space-y-4 pt-4 border-t border-white/5">
+            {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-8 rounded-md" />)}
+          </div>
+        </div>
+      </ReportCard>
+    );
+  }
 
   return (
     <ReportCard eyebrow="01" title="Deal Scorecard">

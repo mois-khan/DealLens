@@ -1,9 +1,29 @@
 import React from 'react';
 import ReportCard from '../shared/ReportCard';
 import ThreatCell from '../shared/ThreatCell';
+import Skeleton from '../shared/Skeleton';
 
 export default function Section2Founder({ founder }) {
-  if (!founder) return null;
+  if (!founder) {
+    return (
+      <ReportCard eyebrow="02 — Founder" title="Founder Intelligence">
+        <div className="p-5 space-y-6">
+          <div className="grid grid-cols-3 gap-6">
+            <div className="flex flex-col items-center gap-3">
+              <Skeleton className="w-16 h-16 rounded-full" />
+              <Skeleton className="h-4 w-24 rounded" />
+            </div>
+            <div className="col-span-2 space-y-2">
+              <Skeleton className="h-3 w-16 rounded" />
+              <Skeleton className="h-6 w-32 rounded" />
+              <Skeleton className="h-12 w-full rounded" />
+            </div>
+          </div>
+          <Skeleton className="h-24 w-full rounded-lg" />
+        </div>
+      </ReportCard>
+    );
+  }
 
   return (
     <ReportCard eyebrow="02" title="Founder Intelligence">

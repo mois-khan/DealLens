@@ -62,7 +62,8 @@ export default {
       },
       keyframes: {
         shimmer: {
-          '100%': { transform: 'translateX(100%)' }
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' }
         },
         fadeIn: {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
@@ -70,8 +71,8 @@ export default {
         }
       },
       animation: {
-        shimmer: 'shimmer 2s infinite',
-        fadeIn: 'fadeIn 0.5s ease-out forwards',
+        shimmer: 'shimmer 1.5s infinite',
+        fadeIn: 'fadeIn 0.5s ease-out both',
       }
     },
   },
