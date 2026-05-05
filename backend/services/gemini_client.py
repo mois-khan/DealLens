@@ -47,11 +47,11 @@ def _get_next_client() -> genai.Client:
     _CURRENT_KEY_INDEX = (_CURRENT_KEY_INDEX + 1) % len(_CLIENT_POOL)
     return client
 
-# ── Model Constants ────────────────────────────────────────────────────────────
-
-# Using 2.5 Flash as the stable workhorse model
-FLASH      = "gemini-1.5-flash"
-FLASH_LITE = "gemini-1.5-flash"
+# Verified working models with high free tier limits
+# Using 'latest' aliases correctly maps to the 1,000 RPD free tier pools
+# instead of the strict 20 RPD limits on specific version strings.
+FLASH      = "gemini-flash-latest"       # Complex reasoning
+FLASH_LITE = "gemini-flash-lite-latest"  # Simple aggregation
 
 
 def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
@@ -94,12 +94,20 @@ def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
                 continue
             elif is_retryable:
                 # We've exhausted all keys in this burst. Final wait.
-                wait = 10
-                logger.warning(f"[Gemini] All keys in pool exhausted. Waiting {wait}s...")
+                wait = 5
+                logger.warning(f"[Gemini] All keys in pool exhausted for {model_name}. Waiting {wait}s...")
                 time.sleep(wait)
+                
+                # GRACEFUL FALLBACK: If FLASH fails after all retries, fall back to FLASH_LITE
+                if model_name != FLASH_LITE:
+                    logger.warning(f"[Gemini] Falling back to {FLASH_LITE} to prevent total pipeline failure.")
+                    model_name = FLASH_LITE
+                    continue # Retry one more time with the fallback model
             else:
                 # Critical error (e.g. invalid prompt)
                 raise
+            # Brief pause between key rotations to avoid per-minute limits
+            time.sleep(3)
 
     raise RuntimeError("Gemini failed after exhausting all keys and retries.")
 

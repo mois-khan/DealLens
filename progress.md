@@ -16,6 +16,7 @@
 | 3 | 01 May 2026 | Antigravity (AI) & User | Built F2, F4, F5, F7, and F8. Debugged Gemini rate limits, upgraded to 2.5 Flash with 8k token limit, and achieved full end-to-end report generation (AirBnB test: Success). |
 | 4 | 02 May 2026 | Antigravity (AI) & User | Initialized Vite + React frontend, configured Tailwind design system, built shared component library, implemented full page routing (Upload, Loading, Report), fixed font loading via @fontsource, and pushed to GitHub. |
 | 5 | 05 May 2026 | Antigravity (AI) & User | Finalized E2E integration. Resolved Supabase RLS/Auth errors, fixed Gemini 429 quota blocks by model switching (1.5-flash), and corrected .env typos. |
+| 6 | 05 May 2026 | Antigravity (AI) & User | Fixed "Live Report Glitch" (Gemini 404/429 errors) by switching to `latest` model aliases and adding fallback mechanism. Fixed frontend refresh bug by implementing dynamic routing (`/report/:id`) and persistent data fetching. |
 
 *Update this table at the end of every session. One row per session.*
 
@@ -255,6 +256,8 @@ Future sessions must not re-litigate decisions already logged.*
 | 3 | Optimistic step advancement on loading page (2–3s early) | Makes 60–120s wait feel active and structured | `LoadingPage.jsx` |
 | 4 | F3 and F6 are cuttable — merge as text flags into scorecard if behind schedule | F7 (questions) is the demo centrepiece, protect its build time | `traction_validator.py`, `financial_flags.py` |
 | 5 | Desktop-first layout (1280px primary), minimum viable at 768px | Investors use laptops — mobile is not a priority for this hackathon | All layout components |
+| 6 | Use `gemini-flash-latest` and `gemini-flash-lite-latest` | Bypasses strict 20 RPD limits on specific version strings; ensures demo reliability | `gemini_client.py` |
+| 7 | Implement `/report/:id` dynamic routing | Fixes data loss on page refresh; allows report sharing via URL | `App.jsx`, `ReportPage.jsx` |
 
 *Add new rows here as decisions are made during development.*
 

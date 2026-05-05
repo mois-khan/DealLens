@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import UploadPage from './pages/UploadPage';
 import LoadingPage from './pages/LoadingPage';
 import ReportPage from './pages/ReportPage';
 import { mockReport } from './data/mockReport';
-import { analyseDeck } from './api/analyse';
+import { analyseDeck, getReport } from './api/analyse';
 
 function DealLensFlow() {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ function DealLensFlow() {
       setLiveReport(data);
       
       // Short delay so the user sees the final "Done" state
-      setTimeout(() => navigate('/report'), 1000);
+      setTimeout(() => navigate(`/report/${data.report_id}`), 1000);
       
     } catch (err) {
       clearInterval(interval);
@@ -55,17 +55,50 @@ function DealLensFlow() {
       <Route path="/" element={<UploadPage onUpload={handleUpload} error={uploadError} />} />
       <Route path="/loading" element={<LoadingPage currentStep={currentStep} />} />
       <Route 
-        path="/report" 
+        path="/report/:id" 
         element={
-          <ReportPage 
-            report={liveReport || mockReport} // Fallback to mockReport if directly navigated for testing
-            filename={liveReport ? liveReport.file_name : "Pitch-Example-Air-BnB-PDF.pdf"}
+          <ReportRouteWrapper 
+            liveReport={liveReport}
             activeSection={activeSection}
-            onNavigate={handleNavigate}
+            handleNavigate={handleNavigate}
           />
         } 
       />
     </Routes>
+  );
+}
+
+function ReportRouteWrapper({ liveReport, activeSection, handleNavigate }) {
+  const { id } = useParams();
+  const [reportData, setReportData] = useState(liveReport);
+  const [loading, setLoading] = useState(!liveReport && id);
+
+  useEffect(() => {
+    if (!liveReport && id) {
+      setLoading(true);
+      getReport(id)
+        .then(data => {
+          setReportData(data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error("Failed to fetch report:", err);
+          setLoading(false);
+        });
+    }
+  }, [id, liveReport]);
+
+  if (loading) {
+    return <div className="min-h-screen bg-[#08090a] flex items-center justify-center text-[#8a8f98]">Loading report...</div>;
+  }
+
+  return (
+    <ReportPage 
+      report={reportData || mockReport}
+      filename={reportData ? reportData.file_name : "Pitch-Example-Air-BnB-PDF.pdf"}
+      activeSection={activeSection}
+      onNavigate={handleNavigate}
+    />
   );
 }
 
