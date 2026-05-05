@@ -15,6 +15,7 @@
 | 2 | 30 April 2026 | Antigravity (AI) & User | Built all API service wrappers, implemented F1 (Claim Extractor), added Multi-Key Rotation for Gemini, and verified end-to-end extraction. |
 | 3 | 01 May 2026 | Antigravity (AI) & User | Built F2, F4, F5, F7, and F8. Debugged Gemini rate limits, upgraded to 2.5 Flash with 8k token limit, and achieved full end-to-end report generation (AirBnB test: Success). |
 | 4 | 02 May 2026 | Antigravity (AI) & User | Initialized Vite + React frontend, configured Tailwind design system, built shared component library, implemented full page routing (Upload, Loading, Report), fixed font loading via @fontsource, and pushed to GitHub. |
+| 5 | 05 May 2026 | Antigravity (AI) & User | Finalized E2E integration. Resolved Supabase RLS/Auth errors, fixed Gemini 429 quota blocks by model switching (1.5-flash), and corrected .env typos. |
 
 *Update this table at the end of every session. One row per session.*
 
@@ -123,8 +124,8 @@
 
 - [x] `App.jsx` — React Router with `/`, `/loading`, `/report/:id`, `*` routes
 - [x] `data/mockReport.js` — full mock JSON matching `architecture.md` section 10 schema
-- [ ] `api/analyse.js` — Axios `POST /analyse` (multipart) and `GET /report/:id`
-- [ ] `hooks/useScrollSpy.js` — IntersectionObserver for sidebar highlight
+- [x] `api/analyse.js` — Axios `POST /analyse` (multipart) and `GET /report/:id`
+- [x] `hooks/useScrollSpy.js` — IntersectionObserver for sidebar highlight
 
 ### Shared Components (`components/shared/`)
 
@@ -206,11 +207,11 @@
 
 ### Integration
 
-- [ ] Frontend connected to live backend (`VITE_API_URL` in `.env`)
-- [ ] Real PDF upload → loading page → report page with live data
-- [ ] Mock data (`mockReport.js`) removed from render path
-- [ ] All skeleton states tested with real API latency
-- [ ] All error boundaries tested with malformed data
+- [x] Frontend connected to live backend (`VITE_API_URL` in `.env`)
+- [x] Real PDF upload → loading page → report page with live data
+- [x] Mock data (`mockReport.js`) removed from render path
+- [x] All skeleton states tested with real API latency
+- [x] All error boundaries tested with malformed data
 
 ---
 
