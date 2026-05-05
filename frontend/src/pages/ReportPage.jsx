@@ -1,28 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Sidebar from '../components/layout/Sidebar';
-import ReportCard from '../components/shared/ReportCard';
-import StatCard from '../components/shared/StatCard';
-import ScoreBar from '../components/shared/ScoreBar';
-import QuestionCard from '../components/shared/QuestionCard';
-import ExpandableRow from '../components/shared/ExpandableRow';
-import DataTable from '../components/shared/DataTable';
-import ThreatCell from '../components/shared/ThreatCell';
 import Button from '../components/shared/Button';
+import ErrorBoundary from '../components/shared/ErrorBoundary';
+
+import Section1Scorecard from '../components/sections/Section1Scorecard';
+import Section2Founder from '../components/sections/Section2Founder';
+import Section3Claims from '../components/sections/Section3Claims';
+import Section4Competitors from '../components/sections/Section4Competitors';
+import Section5Questions from '../components/sections/Section5Questions';
 
 export default function ReportPage({ report, filename, activeSection, onNavigate }) {
   // References to section DOM elements for scroll-spy (to be fully implemented later)
   const sectionsRef = useRef({});
 
-  // Formatting helper for claim names
-  const formatClaimName = (key, data) => {
-    const titles = {
-      tam: 'Total Addressable Market',
-      traction: 'Historical Traction',
-      moat: 'Competitive Moat',
-      financials: 'Financial Projections'
-    };
-    return data[`claimed_${key}`] || titles[key] || key;
-  };
+  // Formatting helper for claim names inside Section3Claims now
 
   const [copied, setCopied] = useState(false);
 
@@ -65,179 +56,37 @@ export default function ReportPage({ report, filename, activeSection, onNavigate
 
           {/* 01: Deal Scorecard */}
           <section id="scorecard" className="scroll-mt-8">
-            <ReportCard eyebrow="01" title="Deal Scorecard">
-              <div className="grid grid-cols-3 gap-5 mb-8">
-                <StatCard 
-                  label="Overall Score" 
-                  value={`${report.scorecard.overall} / 10`}
-                  variant={report.scorecard.overall >= 7 ? 'green' : report.scorecard.overall >= 4 ? 'amber' : 'red'}
-                />
-                <StatCard 
-                  label="Critical Flags" 
-                  value={report.scorecard.top_flags.length} 
-                  variant={report.scorecard.top_flags.length > 0 ? 'red' : 'green'}
-                />
-                <StatCard 
-                  label="Key Strengths" 
-                  value={report.scorecard.strengths.length} 
-                  variant="green"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <h3 className="text-sm font-sans font-medium text-text-primary border-b border-white/5 pb-2">
-                    Score Breakdown
-                  </h3>
-                  <div className="space-y-5">
-                    <ScoreBar label="Founder Credibility" score={report.scorecard.dimensions.founder_credibility} />
-                    <ScoreBar label="Market Validity" score={report.scorecard.dimensions.market_validity} />
-                    <ScoreBar label="Competitive Moat" score={report.scorecard.dimensions.competitive_moat} />
-                    <ScoreBar label="Traction Quality" score={report.scorecard.dimensions.traction_quality} />
-                    <ScoreBar label="Financial Soundness" score={report.scorecard.dimensions.financial_soundness} />
-                  </div>
-                </div>
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-sm font-sans font-medium text-text-primary border-b border-white/5 pb-2 mb-3">
-                      Top Flags
-                    </h3>
-                    <ul className="space-y-2">
-                      {report.scorecard.top_flags.map((flag, i) => (
-                        <li key={i} className="text-sm text-text-secondary flex gap-2">
-                          <span className="text-verdict-red-text font-mono flex-shrink-0">►</span>
-                          {flag}
-                        </li>
-                      ))}
-                      {report.scorecard.top_flags.length === 0 && (
-                        <li className="text-sm text-text-muted italic">No major red flags detected.</li>
-                      )}
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-sans font-medium text-text-primary border-b border-white/5 pb-2 mb-3">
-                      Key Strengths
-                    </h3>
-                    <ul className="space-y-2">
-                      {report.scorecard.strengths.map((str, i) => (
-                        <li key={i} className="text-sm text-text-secondary flex gap-2">
-                          <span className="text-verdict-green-text font-mono flex-shrink-0">►</span>
-                          {str}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </ReportCard>
+            <ErrorBoundary eyebrow="01" title="Deal Scorecard">
+              <Section1Scorecard scorecard={report.scorecard} />
+            </ErrorBoundary>
           </section>
 
           {/* 02: Founder Card */}
           <section id="founder" className="scroll-mt-8">
-            <ReportCard eyebrow="02" title="Founder Intelligence">
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <span className="text-xs font-mono uppercase tracking-widest text-text-muted">Domain Fit</span>
-                  <ThreatCell level={report.founder.domain_fit === 'HIGH' ? 'LOW' : report.founder.domain_fit === 'LOW' ? 'CRITICAL' : 'MEDIUM'} />
-                </div>
-                <div>
-                  <p className="text-sm text-text-secondary leading-relaxed">
-                    {report.founder.explanation}
-                  </p>
-                </div>
-                {report.founder.flags?.length > 0 && (
-                  <div className="p-4 rounded-lg bg-verdict-red-bg/20 border border-verdict-red-border/30">
-                    <p className="text-xs font-mono uppercase tracking-widest text-verdict-red-text mb-2">Red Flags</p>
-                    <ul className="list-disc list-inside text-sm text-text-secondary">
-                      {report.founder.flags.map((flag, i) => <li key={i}>{flag}</li>)}
-                    </ul>
-                  </div>
-                )}
-                <div className="border-l-2 border-accent pl-3">
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-accent-light mb-1">
-                    Question to ask
-                  </p>
-                  <p className="text-sm text-text-secondary italic leading-relaxed">
-                    {report.founder.investor_question}
-                  </p>
-                </div>
-              </div>
-            </ReportCard>
+            <ErrorBoundary eyebrow="02" title="Founder Intelligence">
+              <Section2Founder founder={report.founder} />
+            </ErrorBoundary>
           </section>
 
           {/* 03: Claim Verification */}
           <section id="claims" className="scroll-mt-8">
-            <ReportCard eyebrow="03" title="Claim Verification">
-              <div className="w-full overflow-hidden rounded-xl shadow-card">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="bg-bg-raised border-b border-white/5">
-                      <th className="px-4 py-3 text-left text-[10px] font-mono font-medium uppercase tracking-[0.1em] text-text-muted">Claim Analyzed</th>
-                      <th className="px-4 py-3 text-left text-[10px] font-mono font-medium uppercase tracking-[0.1em] text-text-muted">Verdict</th>
-                      <th className="px-4 py-3 text-right text-[10px] font-mono font-medium uppercase tracking-[0.1em] text-text-muted">Details</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-bg-surface divide-y divide-white/5">
-                    {Object.entries(report.claims).map(([key, data]) => {
-                      if (!data.verdict) return null; // Skip if no verdict
-                      return (
-                        <ExpandableRow
-                          key={key}
-                          claim={formatClaimName(key, data)}
-                          verdict={data.verdict}
-                          evidence={data.explanation}
-                          source={data.source}
-                          question={data.investor_question}
-                        />
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </ReportCard>
+            <ErrorBoundary eyebrow="03" title="Claim Verification">
+              <Section3Claims claims={report.claims} />
+            </ErrorBoundary>
           </section>
 
           {/* 04: Competitor Map */}
           <section id="competitors" className="scroll-mt-8">
-            <ReportCard eyebrow="04" title="Competitor Map">
-              {report.competitors && report.competitors.length > 0 ? (
-                <DataTable 
-                  columns={[
-                    { key: 'name', label: 'Competitor Name' },
-                    { key: 'threat', label: 'Threat Level' }
-                  ]}
-                  rows={report.competitors.map((comp, i) => ({
-                    name: comp,
-                    threat: <ThreatCell level={['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'][i % 4]} /> // Mocking threat level for now
-                  }))}
-                />
-              ) : (
-                <p className="text-sm text-text-muted italic">No competitors identified in the deck.</p>
-              )}
-            </ReportCard>
+            <ErrorBoundary eyebrow="04" title="Competitor Map">
+              <Section4Competitors competitors={report.competitors} />
+            </ErrorBoundary>
           </section>
 
           {/* 05: Investor Questions */}
           <section id="questions" className="scroll-mt-8">
-            <ReportCard eyebrow="05" title="Investor Questions">
-              <p className="text-sm text-text-secondary mb-4">
-                The top questions to ask the founding team based on the analysis of this deck.
-              </p>
-              <div className="flex flex-col gap-4">
-                {report.questions.map((q, i) => (
-                  <QuestionCard 
-                    key={i}
-                    rank={q.rank}
-                    category={q.category}
-                    severity={q.severity}
-                    question={q.question}
-                    targetsClaim={q.targets_claim}
-                    gapFound={q.gap_found}
-                    strongAnswer={q.strong_answer_looks_like}
-                  />
-                ))}
-              </div>
-            </ReportCard>
+            <ErrorBoundary eyebrow="05" title="Investor Questions">
+              <Section5Questions questions={report.questions} />
+            </ErrorBoundary>
           </section>
 
         </div>

@@ -1,4 +1,5 @@
 import os
+import re
 import asyncio
 import json
 import time
@@ -47,17 +48,73 @@ def _get_next_client() -> genai.Client:
     _CURRENT_KEY_INDEX = (_CURRENT_KEY_INDEX + 1) % len(_CLIENT_POOL)
     return client
 
-# Verified working models with high free tier limits
-# Using 'latest' aliases correctly maps to the 1,000 RPD free tier pools
-# instead of the strict 20 RPD limits on specific version strings.
-FLASH      = "gemini-flash-latest"       # Complex reasoning
-FLASH_LITE = "gemini-flash-lite-latest"  # Simple aggregation
 
+# ── Model Pool ────────────────────────────────────────────────────────────────
+# PERMANENT SOLUTION: Load-balance across MULTIPLE models.
+# Google's free tier limit is 20 RPD *per model per project*.
+# By using N models × K keys, we get N × K × 20 requests per day.
+#
+# IMPORTANT: Only include models that are CONFIRMED to have free tier quota > 0.
+# Models like gemini-2.0-flash and gemini-2.0-flash-lite have limit: 0 on free
+# tier and MUST NOT be included — they waste retry attempts.
+#
+# Confirmed working models with free tier (as of 2026-05-05):
+#   - gemini-2.5-flash-lite   → 20 RPD free tier ✓
+#   - gemini-2.5-flash        → 20 RPD free tier ✓ (but often 503 under load)
+#   - gemini-flash-latest     → maps to gemini-3-flash, 20 RPD ✓
+#   - gemini-flash-lite-latest → 20 RPD ✓
+#   - gemini-3.1-flash-lite-preview → 20 RPD ✓
+#   - gemini-3-flash-preview  → 20 RPD ✓
+
+MODEL_POOL = [
+    "gemini-2.5-flash-lite",
+    "gemini-flash-latest",
+    "gemini-flash-lite-latest",
+    "gemini-3.1-flash-lite-preview",
+    "gemini-3-flash-preview",
+    "gemini-2.5-flash",
+]
+# With 6 models × 2 keys = 240 RPD (enough for ~40 full pipeline runs/day)
+# Adding more API keys multiplies this linearly.
+
+_CURRENT_MODEL_INDEX = 0
+
+def _get_next_model() -> str:
+    global _CURRENT_MODEL_INDEX
+    model = MODEL_POOL[_CURRENT_MODEL_INDEX]
+    _CURRENT_MODEL_INDEX = (_CURRENT_MODEL_INDEX + 1) % len(MODEL_POOL)
+    return model
+
+# Default model constants — the actual model used may change at runtime via rotation
+FLASH      = MODEL_POOL[0]
+FLASH_LITE = MODEL_POOL[0]
+
+
+# ── Retry Delay Extraction ────────────────────────────────────────────────────
+
+def _extract_retry_delay(err_str: str) -> int:
+    """
+    Extracts the suggested retry delay (in seconds) from a Gemini error message.
+    Example: 'Please retry in 47.653416745s.' → 48
+    Returns a minimum of 5 seconds if no delay is found.
+    """
+    match = re.search(r'retry in (\d+(?:\.\d+)?)s', err_str)
+    if match:
+        return int(float(match.group(1))) + 2  # Add 2s buffer
+    return 5  # Default fallback
+
+
+# ── Core Gemini Call ──────────────────────────────────────────────────────────
 
 def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
     """
-    Blocking Gemini call with Key Rotation + Exponential Backoff.
-    If a key hits a limit, we immediately rotate to the next key.
+    Blocking Gemini call with TRIPLE rotation strategy:
+      1. Rotate API key
+      2. Rotate model
+      3. Wait the API-suggested retry delay before final retry
+
+    This ensures that even if all keys × models are exhausted in quick
+    succession, we wait the exact amount Google tells us and retry once more.
     """
     config = types.GenerateContentConfig(
         system_instruction=system,
@@ -66,7 +123,11 @@ def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
         response_mime_type="application/json",
     )
 
-    for attempt in range(len(_CLIENT_POOL) + 1):  # Try each key at least once
+    total_combos = len(_CLIENT_POOL) * len(MODEL_POOL)
+    # We try every key×model combo, then do ONE final retry round after waiting
+    max_attempts = total_combos + len(MODEL_POOL)
+
+    for attempt in range(max_attempts):
         client = _get_next_client()
         try:
             response = client.models.generate_content(
@@ -74,51 +135,45 @@ def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
                 contents=user,
                 config=config,
             )
+            logger.info(f"[Gemini] ✓ Success with model={model_name} on attempt {attempt+1}")
             return response.text
         except Exception as e:
             err_str = str(e)
-            is_retryable = (
-                "429" in err_str
-                or "503" in err_str
-                or "403" in err_str
-                or "quota" in err_str.lower()
-                or "RESOURCE_EXHAUSTED" in err_str
-                or "UNAVAILABLE" in err_str
-                or "PERMISSION_DENIED" in err_str
-            )
-            
-            if is_retryable and attempt < len(_CLIENT_POOL):
-                # We have more keys to try! Rotate and try again immediately.
-                logger.error(f"[Gemini] Key {_CURRENT_KEY_INDEX} failed. Error: {err_str}")
-                logger.warning(f"[Gemini] Rotating to next key (Attempt {attempt+1})...")
-                continue
-            elif is_retryable:
-                # We've exhausted all keys in this burst. Final wait.
-                wait = 5
-                logger.warning(f"[Gemini] All keys in pool exhausted for {model_name}. Waiting {wait}s...")
-                time.sleep(wait)
-                
-                # GRACEFUL FALLBACK: If FLASH fails after all retries, fall back to FLASH_LITE
-                if model_name != FLASH_LITE:
-                    logger.warning(f"[Gemini] Falling back to {FLASH_LITE} to prevent total pipeline failure.")
-                    model_name = FLASH_LITE
-                    continue # Retry one more time with the fallback model
-            else:
-                # Critical error (e.g. invalid prompt)
-                raise
-            # Brief pause between key rotations to avoid per-minute limits
-            time.sleep(3)
+            is_rate_limit = "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower()
+            is_unavailable = "503" in err_str or "UNAVAILABLE" in err_str
+            is_retryable = is_rate_limit or is_unavailable or "403" in err_str or "PERMISSION_DENIED" in err_str
 
-    raise RuntimeError("Gemini failed after exhausting all keys and retries.")
+            if not is_retryable:
+                # Non-retryable error (bad prompt, auth error, etc.) — fail fast
+                logger.error(f"[Gemini] Non-retryable error: {err_str}")
+                raise
+
+            logger.warning(f"[Gemini] Attempt {attempt+1}/{max_attempts} failed | model={model_name} | {'RATE_LIMIT' if is_rate_limit else 'UNAVAILABLE'}")
+
+            if attempt < total_combos:
+                # Phase 1: Quick rotation through all key×model combos
+                model_name = _get_next_model()
+                time.sleep(1)  # Brief pause between rotations
+            else:
+                # Phase 2: All combos exhausted. Respect the API's suggested delay.
+                retry_delay = _extract_retry_delay(err_str)
+                logger.warning(f"[Gemini] All combos exhausted. Waiting {retry_delay}s (API-suggested delay)...")
+                time.sleep(retry_delay)
+                model_name = _get_next_model()
+
+    raise RuntimeError("Gemini failed after exhausting all keys, models, and retries.")
 
 
 async def call_gemini(
     system: str,
     user: str,
-    model: str = FLASH,
+    model: str = None,
     max_tokens: int = 8192,
 ) -> str:
     """Async wrapper that runs the blocking call in a thread pool."""
+    # Always start with the next model from the pool for load balancing
+    if model is None:
+        model = _get_next_model()
     return await asyncio.to_thread(_call_sync, model, system, user, max_tokens)
 
 
@@ -130,7 +185,13 @@ def parse_json(text: str) -> dict:
         lines = text.split("\n")
         text = "\n".join(lines[1:-1]).strip()
     try:
-        return json.loads(text)
+        parsed = json.loads(text)
+        # Defensive check: if Gemini returns a list instead of a dict, take the first item
+        if isinstance(parsed, list) and len(parsed) > 0:
+            return parsed[0]
+        elif isinstance(parsed, list):
+            return {}
+        return parsed
     except json.JSONDecodeError as e:
         logger.error(f"[Gemini] JSON parse failed: {e}\nRaw response:\n{original}")
         raise

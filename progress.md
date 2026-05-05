@@ -17,6 +17,7 @@
 | 4 | 02 May 2026 | Antigravity (AI) & User | Initialized Vite + React frontend, configured Tailwind design system, built shared component library, implemented full page routing (Upload, Loading, Report), fixed font loading via @fontsource, and pushed to GitHub. |
 | 5 | 05 May 2026 | Antigravity (AI) & User | Finalized E2E integration. Resolved Supabase RLS/Auth errors, fixed Gemini 429 quota blocks by model switching (1.5-flash), and corrected .env typos. |
 | 6 | 05 May 2026 | Antigravity (AI) & User | Fixed "Live Report Glitch" (Gemini 404/429 errors) by switching to `latest` model aliases and adding fallback mechanism. Fixed frontend refresh bug by implementing dynamic routing (`/report/:id`) and persistent data fetching. |
+| 7 | 05 May 2026 | Antigravity (AI) & User | **Finalized Pipeline Reliability (Phase 1 Complete).** Modularized `ReportPage` into components, implemented & tested `ErrorBoundary` for fault-tolerance. Rewrote `gemini_client` with Model-Rotation pool (6 models) to permanently solve 20 RPD free-tier limits. Added retry logic to Tavily/Serper clients. |
 
 *Update this table at the end of every session. One row per session.*
 

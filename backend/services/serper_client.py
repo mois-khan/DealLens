@@ -28,22 +28,26 @@ async def search_serper(query: str, num: int = 10) -> list[dict]:
         logger.warning("[Serper] Empty query received, skipping search.")
         return []
 
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.post(
-                _SERPER_URL,
-                headers={"X-API-KEY": _API_KEY},
-                json={"q": query, "num": num},
-            )
-            response.raise_for_status()
-            return response.json().get("organic", [])
-    except httpx.TimeoutException:
-        logger.error(f"[Serper] Request timed out for query: '{query}'")
-        return []
-    except httpx.HTTPStatusError as e:
-        logger.error(f"[Serper] HTTP {e.response.status_code} for query '{query}': {e}")
-        return []
-    except Exception as e:
-        # Any other failure must never crash the pipeline (rules.md §9)
-        logger.error(f"[Serper] Search failed for query '{query}': {e}")
-        return []
+    import asyncio
+    for attempt in range(3):
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.post(
+                    _SERPER_URL,
+                    headers={"X-API-KEY": _API_KEY},
+                    json={"q": query, "num": num},
+                )
+                response.raise_for_status()
+                return response.json().get("organic", [])
+        except httpx.TimeoutException:
+            logger.warning(f"[Serper] Attempt {attempt+1} timed out for query: '{query}'")
+        except httpx.HTTPStatusError as e:
+            logger.warning(f"[Serper] Attempt {attempt+1} HTTP {e.response.status_code} for query '{query}': {e}")
+        except Exception as e:
+            logger.warning(f"[Serper] Attempt {attempt+1} failed for query '{query}': {e}")
+            
+        if attempt < 2:
+            await asyncio.sleep(2)
+    
+    logger.error(f"[Serper] All 3 attempts failed for query '{query}'. Returning empty results.")
+    return []

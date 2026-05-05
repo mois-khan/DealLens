@@ -29,16 +29,21 @@ async def search_tavily(query: str, max_results: int = 5) -> list[dict]:
         logger.warning("[Tavily] Empty query received, skipping search.")
         return []
 
-    try:
-        result: dict = await asyncio.to_thread(
-            lambda: _client.search(
-                query=query,
-                max_results=max_results,
-                include_raw_content=True,
+    for attempt in range(3):
+        try:
+            result: dict = await asyncio.to_thread(
+                lambda: _client.search(
+                    query=query,
+                    max_results=max_results,
+                    include_raw_content=True,
+                )
             )
-        )
-        return result.get("results", [])
-    except Exception as e:
-        # Tavily failure must never block the report (rules.md §9)
-        logger.error(f"[Tavily] Search failed for query '{query}': {e}")
-        return []
+            return result.get("results", [])
+        except Exception as e:
+            logger.warning(f"[Tavily] Attempt {attempt+1} failed for query '{query}': {e}")
+            if attempt < 2:
+                await asyncio.sleep(2) # Brief wait before retry
+            else:
+                # Tavily failure must never block the report (rules.md §9)
+                logger.error(f"[Tavily] All 3 attempts failed for query '{query}'. Returning empty results.")
+                return []
