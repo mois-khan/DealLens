@@ -4,7 +4,7 @@ import React, { useState } from 'react';
  * Landing page with drag-and-drop file upload.
  * Matches design.md §6.8.
  */
-export default function UploadPage({ onUpload }) {
+export default function UploadPage({ onUpload, error }) {
   const [dragging, setDragging] = useState(false);
 
   return (
@@ -34,9 +34,11 @@ export default function UploadPage({ onUpload }) {
           w-full max-w-lg rounded-2xl border-2 border-dashed
           flex flex-col items-center justify-center gap-4 py-16 px-8
           transition-colors duration-150 cursor-pointer
-          ${dragging
-            ? 'border-accent bg-accent/5'
-            : 'border-white/10 hover:border-white/20 bg-bg-surface'
+          ${error 
+            ? 'border-verdict-red-border bg-verdict-red-bg/10' 
+            : dragging
+              ? 'border-accent bg-accent/5'
+              : 'border-white/10 hover:border-white/20 bg-bg-surface'
           }
         `}
       >
@@ -45,10 +47,10 @@ export default function UploadPage({ onUpload }) {
         </div>
         <div className="text-center">
           <p className="text-sm font-sans font-medium text-text-secondary">
-            Drop your pitch deck here
+            {error ? <span className="text-verdict-red-text">{error}</span> : "Drop your pitch deck here"}
           </p>
           <p className="text-xs font-mono text-text-faint mt-1">
-            PDF only · Max 20MB
+            {error ? "Please try again." : "PDF only · Max 20MB"}
           </p>
         </div>
         <label className="cursor-pointer">

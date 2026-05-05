@@ -50,8 +50,8 @@ def _get_next_client() -> genai.Client:
 # ── Model Constants ────────────────────────────────────────────────────────────
 
 # Using 2.5 Flash as the stable workhorse model
-FLASH      = "gemini-2.5-flash"
-FLASH_LITE = "gemini-2.5-flash"
+FLASH      = "gemini-1.5-flash"
+FLASH_LITE = "gemini-1.5-flash"
 
 
 def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
