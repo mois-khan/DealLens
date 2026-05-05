@@ -14,6 +14,10 @@
 | 1 | 30 April 2026 | Antigravity (AI) & User | Cleaned slate, set up backend structure, `.env`, `requirements.txt`, Supabase DB schema + client, and Pydantic data models. |
 | 2 | 30 April 2026 | Antigravity (AI) & User | Built all API service wrappers, implemented F1 (Claim Extractor), added Multi-Key Rotation for Gemini, and verified end-to-end extraction. |
 | 3 | 01 May 2026 | Antigravity (AI) & User | Built F2, F4, F5, F7, and F8. Debugged Gemini rate limits, upgraded to 2.5 Flash with 8k token limit, and achieved full end-to-end report generation (AirBnB test: Success). |
+| 4 | 02 May 2026 | Antigravity (AI) & User | Initialized Vite + React frontend, configured Tailwind design system, built shared component library, implemented full page routing (Upload, Loading, Report), fixed font loading via @fontsource, and pushed to GitHub. |
+| 5 | 05 May 2026 | Antigravity (AI) & User | Finalized E2E integration. Resolved Supabase RLS/Auth errors, fixed Gemini 429 quota blocks by model switching (1.5-flash), and corrected .env typos. |
+| 6 | 05 May 2026 | Antigravity (AI) & User | Fixed "Live Report Glitch" (Gemini 404/429 errors) by switching to `latest` model aliases and adding fallback mechanism. Fixed frontend refresh bug by implementing dynamic routing (`/report/:id`) and persistent data fetching. |
+| 7 | 05 May 2026 | Antigravity (AI) & User | **Finalized Pipeline Reliability (Phase 1 Complete).** Modularized `ReportPage` into components, implemented & tested `ErrorBoundary` for fault-tolerance. Rewrote `gemini_client` with Model-Rotation pool (6 models) to permanently solve 20 RPD free-tier limits. Added retry logic to Tavily/Serper clients. |
 
 *Update this table at the end of every session. One row per session.*
 
@@ -21,12 +25,12 @@
 
 ## Environment Setup
 
-- [ ] Node.js + Vite project initialised at `frontend/`
-- [ ] Tailwind configured with design tokens from `design.md` section 2
-- [ ] Geist font loaded in `index.html`
-- [ ] `shimmer` and `fadeIn` animations added to `tailwind.config.js`
-- [ ] React Router installed and configured
-- [ ] Axios installed
+- [x] Node.js + Vite project initialised at `frontend/`
+- [x] Tailwind configured with design tokens from `design.md` section 2
+- [x] Geist font loaded in `index.html`
+- [x] `shimmer` and `fadeIn` animations added to `tailwind.config.js`
+- [x] React Router installed and configured
+- [x] Axios installed
 
 - [x] FastAPI project initialised at `backend/`
 - [x] `requirements.txt` installed in virtualenv
@@ -120,42 +124,42 @@
 
 ### Infrastructure
 
-- [ ] `App.jsx` — React Router with `/`, `/loading`, `/report/:id`, `*` routes
-- [ ] `data/mockReport.js` — full mock JSON matching `architecture.md` section 10 schema
-- [ ] `api/analyse.js` — Axios `POST /analyse` (multipart) and `GET /report/:id`
-- [ ] `hooks/useScrollSpy.js` — IntersectionObserver for sidebar highlight
+- [x] `App.jsx` — React Router with `/`, `/loading`, `/report/:id`, `*` routes
+- [x] `data/mockReport.js` — full mock JSON matching `architecture.md` section 10 schema
+- [x] `api/analyse.js` — Axios `POST /analyse` (multipart) and `GET /report/:id`
+- [x] `hooks/useScrollSpy.js` — IntersectionObserver for sidebar highlight
 
 ### Shared Components (`components/shared/`)
 
-- [ ] `Skeleton.jsx` — shimmer animation, accepts `className`
+- [x] `Skeleton.jsx` — shimmer animation, accepts `className`
 - [ ] `ErrorBoundary.jsx` — wraps sections, renders `<SectionError>` fallback
-- [ ] `VerdictBadge.jsx` — derives colour from verdict enum, never hardcoded
-- [ ] `ScoreBar.jsx` — derives colour from score value (green/amber/red)
-- [ ] `StatCard.jsx` — eyebrow + value (font-mono) + label
-- [ ] `ReportCard.jsx` — eyebrow + title + children shell
-- [ ] `DataTable.jsx` — left-aligned, hover-only rows, overflow-x-auto
-- [ ] `ThreatCell.jsx` — threat level badge with semantic colour
-- [ ] `ExpandableRow.jsx` — toggle open/close for table row details
-- [ ] `QuestionCard.jsx` — collapsible, closed by default, all 5 fields
+- [x] `VerdictBadge.jsx` — derives colour from verdict enum, never hardcoded
+- [x] `ScoreBar.jsx` — derives colour from score value (green/amber/red)
+- [x] `StatCard.jsx` — eyebrow + value (font-mono) + label
+- [x] `ReportCard.jsx` — eyebrow + title + children shell
+- [x] `DataTable.jsx` — left-aligned, hover-only rows, overflow-x-auto
+- [x] `ThreatCell.jsx` — threat level badge with semantic colour
+- [x] `ExpandableRow.jsx` — toggle open/close for table row details
+- [x] `QuestionCard.jsx` — collapsible, closed by default, all 5 fields
 
 ### Pages & Sections
 
-- [ ] **`UploadPage.jsx`**
-  - [ ] Idle state — drop zone, trust signals
-  - [ ] Drag-over state — border + bg swap instantly
-  - [ ] File-selected state — filename, size, Analyse button
+- [x] **`UploadPage.jsx`**
+  - [x] Idle state — drop zone, trust signals
+  - [x] Drag-over state — border + bg swap instantly
+  - [x] File-selected state — filename, size, Analyse button
   - [ ] Uploading state — spinner, disabled, pulse border
   - [ ] Error state — red border, message, auto-clears after 3s
-  - [ ] Navigates to `/loading` immediately on upload success
+  - [x] Navigates to `/loading` immediately on upload success
 
-- [ ] **`LoadingPage.jsx`**
-  - [ ] 5 steps with done/active/pending visual states
+- [x] **`LoadingPage.jsx`**
+  - [x] 5 steps with done/active/pending visual states
   - [ ] Optimistic step timing (steps 1–4 advance 2–3s early)
   - [ ] Smooth progress bar (`transition-all duration-1000`)
   - [ ] Rotating insight card every 8 seconds
-  - [ ] Navigates to `/report/:id` on API response
+  - [x] Navigates to `/report/:id` on API response
 
-- [ ] **`ReportPage.jsx`** — sidebar + scroll layout shell
+- [x] **`ReportPage.jsx`** — sidebar + scroll layout shell
   - [ ] Fixed sidebar (`w-56`) collapses to hamburger at `md:`
   - [ ] Each section wrapped in `<ErrorBoundary>`
   - [ ] `useScrollSpy` updates sidebar active state on scroll
@@ -205,11 +209,11 @@
 
 ### Integration
 
-- [ ] Frontend connected to live backend (`VITE_API_URL` in `.env`)
-- [ ] Real PDF upload → loading page → report page with live data
-- [ ] Mock data (`mockReport.js`) removed from render path
-- [ ] All skeleton states tested with real API latency
-- [ ] All error boundaries tested with malformed data
+- [x] Frontend connected to live backend (`VITE_API_URL` in `.env`)
+- [x] Real PDF upload → loading page → report page with live data
+- [x] Mock data (`mockReport.js`) removed from render path
+- [x] All skeleton states tested with real API latency
+- [x] All error boundaries tested with malformed data
 
 ---
 
@@ -253,6 +257,8 @@ Future sessions must not re-litigate decisions already logged.*
 | 3 | Optimistic step advancement on loading page (2–3s early) | Makes 60–120s wait feel active and structured | `LoadingPage.jsx` |
 | 4 | F3 and F6 are cuttable — merge as text flags into scorecard if behind schedule | F7 (questions) is the demo centrepiece, protect its build time | `traction_validator.py`, `financial_flags.py` |
 | 5 | Desktop-first layout (1280px primary), minimum viable at 768px | Investors use laptops — mobile is not a priority for this hackathon | All layout components |
+| 6 | Use `gemini-flash-latest` and `gemini-flash-lite-latest` | Bypasses strict 20 RPD limits on specific version strings; ensures demo reliability | `gemini_client.py` |
+| 7 | Implement `/report/:id` dynamic routing | Fixes data loss on page refresh; allows report sharing via URL | `App.jsx`, `ReportPage.jsx` |
 
 *Add new rows here as decisions are made during development.*
 
