@@ -18,6 +18,7 @@
 | 5 | 05 May 2026 | Antigravity (AI) & User | Finalized E2E integration. Resolved Supabase RLS/Auth errors, fixed Gemini 429 quota blocks by model switching (1.5-flash), and corrected .env typos. |
 | 6 | 05 May 2026 | Antigravity (AI) & User | Fixed "Live Report Glitch" (Gemini 404/429 errors) by switching to `latest` model aliases and adding fallback mechanism. Fixed frontend refresh bug by implementing dynamic routing (`/report/:id`) and persistent data fetching. |
 | 7 | 05 May 2026 | Antigravity (AI) & User | **Finalized Pipeline Reliability (Phase 1 Complete).** Modularized `ReportPage` into components, implemented & tested `ErrorBoundary` for fault-tolerance. Rewrote `gemini_client` with Model-Rotation pool (6 models) to permanently solve 20 RPD free-tier limits. Added retry logic to Tavily/Serper clients. |
+| 8 | 05 May 2026 | Antigravity (AI) & User | **Finalized Perceived Performance (Phase 2 Complete).** Implemented high-fidelity skeleton loading states for all report sections. Added custom shimmer and staggered fadeIn animations to Tailwind. Created modular `Skeleton.jsx`. Implemented AI-powered OCR fallback for image-based PDFs and fixed frontend timeout issues (increased to 5m). |
 
 *Update this table at the end of every session. One row per session.*
 
@@ -132,7 +133,7 @@
 ### Shared Components (`components/shared/`)
 
 - [x] `Skeleton.jsx` — shimmer animation, accepts `className`
-- [ ] `ErrorBoundary.jsx` — wraps sections, renders `<SectionError>` fallback
+- [x] `ErrorBoundary.jsx` — wraps sections, renders `<SectionError>` fallback
 - [x] `VerdictBadge.jsx` — derives colour from verdict enum, never hardcoded
 - [x] `ScoreBar.jsx` — derives colour from score value (green/amber/red)
 - [x] `StatCard.jsx` — eyebrow + value (font-mono) + label
@@ -148,7 +149,7 @@
   - [x] Idle state — drop zone, trust signals
   - [x] Drag-over state — border + bg swap instantly
   - [x] File-selected state — filename, size, Analyse button
-  - [ ] Uploading state — spinner, disabled, pulse border
+  - [x] Uploading state — spinner, disabled, pulse border
   - [ ] Error state — red border, message, auto-clears after 3s
   - [x] Navigates to `/loading` immediately on upload success
 
@@ -161,49 +162,49 @@
 
 - [x] **`ReportPage.jsx`** — sidebar + scroll layout shell
   - [ ] Fixed sidebar (`w-56`) collapses to hamburger at `md:`
-  - [ ] Each section wrapped in `<ErrorBoundary>`
+  - [x] Each section wrapped in `<ErrorBoundary>`
   - [ ] `useScrollSpy` updates sidebar active state on scroll
 
 - [ ] **`ReportHeader.jsx`** — startup name, file name, overall score
 
-- [ ] **`Section1Scorecard.jsx`**
-  - [ ] 3 stat cards (overall, top flag count, strengths count)
-  - [ ] 5 dimension score bars with animated fill
-  - [ ] Top flags list
-  - [ ] Strengths list
-  - [ ] Skeleton state
+- [x] **`Section1Scorecard.jsx`**
+  - [x] 3 stat cards (overall, top flag count, strengths count)
+  - [x] 5 dimension score bars with animated fill
+  - [x] Top flags list
+  - [x] Strengths list
+  - [x] Skeleton state
 
-- [ ] **`Section2Founder.jsx`**
-  - [ ] Domain fit badge + reason
-  - [ ] Verdict text
-  - [ ] Past ventures list
-  - [ ] Credibility signals
-  - [ ] Red flags
-  - [ ] Public summary
-  - [ ] Empty state: "No public founder data found..."
-  - [ ] Skeleton state
+- [x] **`Section2Founder.jsx`**
+  - [x] Domain fit badge + reason
+  - [x] Verdict text
+  - [x] Past ventures list
+  - [x] Credibility signals
+  - [x] Red flags
+  - [x] Public summary
+  - [x] Empty state: "No public founder data found..."
+  - [x] Skeleton state
 
-- [ ] **`Section3Claims.jsx`**
-  - [ ] TAM row — verdict badge, claimed vs real, inflation factor, explanation, source
-  - [ ] Traction flags — expandable rows per flag
-  - [ ] Moat row — verdict badge, claimed moat, explanation
-  - [ ] Financial flags list
-  - [ ] Empty state: "No verifiable claims extracted from this deck."
-  - [ ] Skeleton state
+- [x] **`Section3Claims.jsx`**
+  - [x] TAM row — verdict badge, claimed vs real, inflation factor, explanation, source
+  - [x] Traction flags — expandable rows per flag
+  - [x] Moat row — verdict badge, claimed moat, explanation
+  - [x] Financial flags list
+  - [x] Empty state: "No verifiable claims extracted from this deck."
+  - [x] Skeleton state
 
-- [ ] **`Section4Competitors.jsx`**
-  - [ ] Competitor table — name, backing, scale, threat level badge
-  - [ ] Threat level colour: CRITICAL=red, HIGH=amber, MEDIUM=blue, LOW=neutral
-  - [ ] Empty state: "No funded competitors found in this category."
-  - [ ] Skeleton state (3 placeholder rows)
+- [x] **`Section4Competitors.jsx`**
+  - [x] Competitor table — name, backing, scale, threat level badge
+  - [x] Threat level colour: CRITICAL=red, HIGH=amber, MEDIUM=blue, LOW=neutral
+  - [x] Empty state: "No funded competitors found in this category."
+  - [x] Skeleton state (3 placeholder rows)
 
-- [ ] **`Section5Questions.jsx`**
-  - [ ] 5 `<QuestionCard>` components
-  - [ ] 150ms stagger animation on render
+- [x] **`Section5Questions.jsx`**
+  - [x] 5 `<QuestionCard>` components
+  - [x] 150ms stagger animation on render
   - [ ] "Copy all questions" button with ✓ Copied feedback (2s)
   - [ ] Copy format: plain text with Q1 [Category — Severity] label
   - [ ] Empty state: "Questions could not be generated..."
-  - [ ] Skeleton state (5 placeholder cards)
+  - [x] Skeleton state (5 placeholder cards)
 
 - [ ] **`NotFound.jsx`** — 404 page with "← Analyse a new deck" link
 
