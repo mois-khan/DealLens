@@ -207,6 +207,13 @@
 
 - [ ] **`NotFound.jsx`** — 404 page with "← Analyse a new deck" link
 
+### 🛠️ Phase 3: UX Polish & Interactivity
+- [ ] **Sidebar Navigation**: Hook up the `IntersectionObserver` so the sidebar highlights the correct section (`01-05`) as the investor scrolls down the long page.
+- [ ] **"Copy All Questions" Feature**: Add the button to `Section5Questions` that copies the 5 generated questions to the clipboard with a 2-second `✓ Copied` feedback state.
+- [ ] **Finish `LoadingPage.jsx`**: Ensure the progress bar automatically advances (optimistic UI) and hook up the 8-second rotating "Investor Insight" cards.
+- [ ] **Finish `UploadPage.jsx`**: Ensure drag-and-drop hover states work and that errors (like >20MB or non-PDF) auto-clear after 3 seconds.
+- [ ] **Build `NotFound.jsx`**: A simple dark 404 page with a `← Analyse a new deck` link.
+
 ### Integration
 
 - [x] Frontend connected to live backend (`VITE_API_URL` in `.env`)
