@@ -51,6 +51,7 @@ async def analyse_deck(file: Annotated[UploadFile, File(description="Pitch deck 
         raise HTTPException(status_code=422, detail="Uploaded file is empty.")
 
     # ── Step 1: PDF text extraction ────────────────────────────────────────────
+    logger.info(f"[analyse] 🚀 Starting PDF text extraction for '{filename}'...")
     from pipeline.extractor import extract_text
     raw_text = await extract_text(pdf_bytes)
     
@@ -59,13 +60,15 @@ async def analyse_deck(file: Annotated[UploadFile, File(description="Pitch deck 
     extraction_input = raw_text if raw_text.strip() else pdf_bytes
     
     if not raw_text.strip():
-        logger.info(f"[analyse] No text extracted via PyMuPDF. Falling back to Gemini AI-OCR for '{filename}'.")
+        logger.info(f"[analyse] ⚠️ No text extracted via PyMuPDF. Falling back to Gemini AI-OCR.")
     else:
-        logger.info(f"[analyse] PDF received: '{filename}' ({len(pdf_bytes)} bytes). Text extracted via PyMuPDF.")
+        logger.info(f"[analyse] ✅ PDF text extraction complete ({len(pdf_bytes)} bytes).")
 
     # ── Step 2: Extract claims (Gemini Flash - F1) ─────────────────────────────
+    logger.info("[analyse] 🔎 Parsing claims and startup category (F1)...")
     from pipeline.claim_parser import extract_claims
     claims = await extract_claims(extraction_input)
+    logger.info(f"[analyse] ✅ Claim extraction complete. Category: {claims.get('category', 'unknown')}")
 
     # ── Step 3: Web Research (Tavily, Serper, Crunchbase) ─────────────────────────
     # ── Step 3: Shared Context & Web Research (Task 2 & 3) ──────────────────────
@@ -100,12 +103,15 @@ async def analyse_deck(file: Annotated[UploadFile, File(description="Pitch deck 
             cb_tasks.append(get_person(f["name"]))
             
     # Gather search results
+    logger.info(f"[analyse] 🌐 Dispatching parallel web research (Tavily + Serper)...")
     research_results = await asyncio.gather(tavily_task, serper_task, *cb_tasks)
     tavily_results = research_results[0]
     serper_results = research_results[1]
     cb_results = research_results[2:]
+    logger.info(f"[analyse] ✅ Web research complete. Found {len(serper_results)} competitors and {len(tavily_results)} market signals.")
 
     # ── Step 4: AI Analysis (F2, F4, F5) ──────────────────────────────────────
+    logger.info("[analyse] 🤖 Running AI analysis modules (TAM, Moat, Founder)...")
     from pipeline.tam_checker import check_tam
     from pipeline.moat_tester import test_moat
     from pipeline.founder_intel import test_founder
@@ -142,6 +148,7 @@ async def analyse_deck(file: Annotated[UploadFile, File(description="Pitch deck 
         }
 
     # ── Step 5: Synthesis (F7, F8) ─────────────────────────────────────────────
+    logger.info("[analyse] ✍️ Synthesizing final report and scorecard...")
     from pipeline.question_gen import generate_questions
     from pipeline.scorecard import generate_scorecard
     
@@ -179,6 +186,7 @@ async def analyse_deck(file: Annotated[UploadFile, File(description="Pitch deck 
     }
 
     # Save to Supabase
+    logger.info("[analyse] 💾 Persisting report to Supabase...")
     report_id = await save_report(report_data)
     report_data["report_id"] = report_id
 

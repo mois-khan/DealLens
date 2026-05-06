@@ -147,12 +147,23 @@ def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
     for attempt in range(max_attempts):
         client = _get_next_client()
         try:
-            # Handle multi-modal input (PDF bytes fallback)
+            # Handle multi-modal input (PDF or Image bytes fallback)
             content_parts = user
             if isinstance(user, bytes):
+                # Basic mime type detection based on magic bytes
+                mime_type = "application/pdf"
+                if user.startswith(b"\xff\xd8"):
+                    mime_type = "image/jpeg"
+                elif user.startswith(b"\x89PNG"):
+                    mime_type = "image/png"
+                elif user.startswith(b"GIF8"):
+                    mime_type = "image/gif"
+                elif user.startswith(b"RIFF") and user[8:12] == b"WEBP":
+                    mime_type = "image/webp"
+
                 content_parts = [
-                    types.Part.from_bytes(data=user, mime_type="application/pdf"),
-                    "Extract all text and structured data from this PDF."
+                    types.Part.from_bytes(data=user, mime_type=mime_type),
+                    "Process this document/image according to the instructions provided."
                 ]
 
             response = client.models.generate_content(
