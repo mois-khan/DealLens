@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReportCard from '../shared/ReportCard';
 import ExpandableRow from '../shared/ExpandableRow';
 import Skeleton from '../shared/Skeleton';
 
 export default function Section3Claims({ claims }) {
+  const [filter, setFilter] = useState('All');
+
   if (!claims) {
     return (
       <ReportCard eyebrow="03 — Claims" title="Claim Verification">
@@ -31,6 +33,8 @@ export default function Section3Claims({ claims }) {
     );
   }
 
+  const FILTERS = ['All', 'Inflated', 'Unsubstantiated', 'Verified'];
+
   const formatClaimName = (key, data) => {
     const titles = {
       tam: 'Total Addressable Market',
@@ -41,8 +45,35 @@ export default function Section3Claims({ claims }) {
     return data[`claimed_${key}`] || titles[key] || key;
   };
 
+  const filteredClaims = Object.entries(claims).filter(([key, data]) => {
+    if (filter === 'All') return true;
+    return data.verdict === filter.toUpperCase();
+  });
+
   return (
     <ReportCard eyebrow="03" title="Claim Verification">
+      <div className="flex flex-wrap items-center gap-2 mb-6">
+        {FILTERS.map(f => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`
+              px-3 py-1 rounded-full text-[10px] font-mono font-medium uppercase tracking-widest
+              transition-all duration-150 border
+              ${filter === f
+                ? 'bg-accent/10 text-accent-light border-accent/30 shadow-[0_0_12px_rgba(113,112,255,0.2)]'
+                : 'bg-transparent text-text-muted border-white/5 hover:border-white/20'
+              }
+            `}
+          >
+            {f}
+          </button>
+        ))}
+        <span className="ml-auto text-[10px] font-mono text-text-faint">
+          {filteredClaims.length} Claim{filteredClaims.length !== 1 ? 's' : ''}
+        </span>
+      </div>
+
       <div className="w-full overflow-hidden rounded-xl shadow-card">
         <table className="w-full text-sm">
           <thead>
@@ -53,19 +84,27 @@ export default function Section3Claims({ claims }) {
             </tr>
           </thead>
           <tbody className="bg-bg-surface divide-y divide-white/5">
-            {Object.entries(claims).map(([key, data]) => {
-              if (!data.verdict) return null; // Skip if no verdict
-              return (
-                <ExpandableRow
-                  key={key}
-                  claim={formatClaimName(key, data)}
-                  verdict={data.verdict}
-                  evidence={data.explanation}
-                  source={data.source}
-                  question={data.investor_question}
-                />
-              );
-            })}
+            {filteredClaims.length > 0 ? (
+              filteredClaims.map(([key, data]) => {
+                if (!data.verdict) return null;
+                return (
+                  <ExpandableRow
+                    key={key}
+                    claim={formatClaimName(key, data)}
+                    verdict={data.verdict}
+                    evidence={data.explanation}
+                    source={data.source}
+                    question={data.investor_question}
+                  />
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan={3} className="px-4 py-12 text-center text-text-muted font-sans italic">
+                  No claims found with the "{filter}" verdict.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

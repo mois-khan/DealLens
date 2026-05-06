@@ -36,21 +36,35 @@ export default function ReportPage({ report, filename, onNavigate }) {
           
           {/* Header */}
           <div className="flex items-center justify-between border-b border-white/5 pb-6">
-            <div>
+            <div className="space-y-1">
               <h1 className="text-3xl font-sans font-semibold tracking-tight text-text-primary">
                 {report.scorecard.startup_name}
               </h1>
-              <p className="text-sm text-text-muted mt-2">
-                Automated Due Diligence Report
-              </p>
+              <div className="flex items-center gap-3">
+                <p className="text-xs font-mono text-text-faint">{filename}</p>
+                <span className="text-text-faint/30 text-[10px]">|</span>
+                <p className="text-[10px] font-mono text-text-faint uppercase tracking-wider">Analysed just now</p>
+              </div>
             </div>
-            <div className="flex gap-3">
-              <Button variant="ghost" onClick={handleExportPDF}>
-                Export PDF
-              </Button>
-              <Button variant="primary" onClick={handleShare}>
-                {copied ? '✓ Link Copied' : 'Share Report'}
-              </Button>
+            <div className="flex items-center gap-6">
+              <div className="flex flex-col items-end">
+                <p className="text-[10px] font-mono uppercase tracking-widest text-text-muted mb-1">Overall Score</p>
+                <span className={`px-4 py-1 rounded-full font-mono text-sm font-semibold border ${
+                  report.scorecard.overall >= 7 ? 'bg-verdict-green-bg text-verdict-green-text border-verdict-green-border' :
+                  report.scorecard.overall >= 4 ? 'bg-verdict-amber-bg text-verdict-amber-text border-verdict-amber-border' :
+                  'bg-verdict-red-bg text-verdict-red-text border-verdict-red-border'
+                }`}>
+                  {report.scorecard.overall} / 10
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="ghost" onClick={handleExportPDF}>
+                  Export PDF
+                </Button>
+                <Button variant="primary" onClick={handleShare}>
+                  {copied ? '✓ Link Copied' : 'Share Report'}
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -78,7 +92,7 @@ export default function ReportPage({ report, filename, onNavigate }) {
           {/* 04: Competitor Map */}
           <section id="competitors" className="scroll-mt-8">
             <ErrorBoundary eyebrow="04" title="Competitor Map">
-              <Section4Competitors competitors={report.competitors} />
+              <Section4Competitors competitors={report.competitors} moat={report.claims.moat} />
             </ErrorBoundary>
           </section>
 

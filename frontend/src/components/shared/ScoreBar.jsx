@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 /**
  * Score bar with animated fill. Colour derived from score value.
  * 7–10 → green, 4–6 → amber, 1–3 → red
  */
-export default function ScoreBar({ label, score, maxScore = 10 }) {
+export default function ScoreBar({ label, score, maxScore = 10, delay = 0 }) {
+  const [width, setWidth] = useState(0);
   const pct = (score / maxScore) * 100;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setWidth(pct);
+    }, delay);
+    return () => clearTimeout(timer);
+  }, [pct, delay]);
 
   const colour =
     score >= 7 ? 'bg-verdict-green-bar'  :
@@ -31,8 +39,8 @@ export default function ScoreBar({ label, score, maxScore = 10 }) {
       <div className="h-1.5 w-full rounded-full bg-score-track">
         {/* Fill */}
         <div
-          className={`h-1.5 rounded-full transition-all duration-500 ${colour}`}
-          style={{ width: `${pct}%` }}
+          className={`h-1.5 rounded-full transition-all duration-1000 ease-out ${colour}`}
+          style={{ width: `${width}%` }}
         />
       </div>
     </div>

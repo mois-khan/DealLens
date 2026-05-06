@@ -46,11 +46,11 @@ export default function Section1Scorecard({ scorecard }) {
             Score Breakdown
           </h3>
           <div className="space-y-5">
-            <ScoreBar label="Founder Credibility" score={scorecard.dimensions.founder_credibility} />
-            <ScoreBar label="Market Validity" score={scorecard.dimensions.market_validity} />
-            <ScoreBar label="Competitive Moat" score={scorecard.dimensions.competitive_moat} />
-            <ScoreBar label="Traction Quality" score={scorecard.dimensions.traction_quality} />
-            <ScoreBar label="Financial Soundness" score={scorecard.dimensions.financial_soundness} />
+            <ScoreBar label="Founder Credibility" score={scorecard.dimensions.founder_credibility} delay={100} />
+            <ScoreBar label="Market Validity" score={scorecard.dimensions.market_validity} delay={200} />
+            <ScoreBar label="Competitive Moat" score={scorecard.dimensions.competitive_moat} delay={300} />
+            <ScoreBar label="Traction Quality" score={scorecard.dimensions.traction_quality} delay={400} />
+            <ScoreBar label="Financial Soundness" score={scorecard.dimensions.financial_soundness} delay={500} />
           </div>
         </div>
         <div className="space-y-6">

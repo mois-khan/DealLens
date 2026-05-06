@@ -78,6 +78,19 @@ export default function UploadPage({ onUpload, error }) {
           />
         </label>
       </div>
+
+      {/* Trust Signals */}
+      <div className="flex items-center gap-8 mt-12 animate-fadeIn" style={{ animationDelay: '200ms' }}>
+        <div className="flex items-center gap-2 text-[10px] font-mono text-text-faint uppercase tracking-wider">
+          <span className="text-sm">🔒</span> Private · Never Stored
+        </div>
+        <div className="flex items-center gap-2 text-[10px] font-mono text-text-faint uppercase tracking-wider">
+          <span className="text-sm">⚡</span> Results in ~10 min
+        </div>
+        <div className="flex items-center gap-2 text-[10px] font-mono text-text-faint uppercase tracking-wider">
+          <span className="text-sm">🎯</span> 5 Investor Questions
+        </div>
+      </div>
     </div>
   );
 }
