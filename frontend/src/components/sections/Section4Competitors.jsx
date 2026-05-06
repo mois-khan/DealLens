@@ -61,18 +61,23 @@ export default function Section4Competitors({ competitors, moat }) {
           </div>
         </div>
 
-        {/* Competitor Table */}
+        {/* Competitor List */}
         {competitors && competitors.length > 0 ? (
-          <DataTable 
-            columns={[
-              { key: 'name', label: 'Competitor Name' },
-              { key: 'threat', label: 'Threat Level' }
-            ]}
-            rows={competitors.map((comp, i) => ({
-              name: comp,
-              threat: <ThreatCell level={['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'][i % 4]} />
-            }))}
-          />
+          <div className="rounded-xl overflow-hidden shadow-card border border-white/5">
+            <div className="bg-bg-raised px-4 py-3 border-b border-white/5">
+              <span className="text-[10px] font-mono font-medium uppercase tracking-widest text-text-muted">
+                Funded Competitors Identified
+              </span>
+            </div>
+            <div className="divide-y divide-white/5">
+              {competitors.map((comp, i) => (
+                <div key={i} className="px-4 py-3 flex items-center gap-3 bg-bg-surface hover:bg-bg-raised transition-colors">
+                  <span className="text-[10px] font-mono text-text-faint w-5">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="text-sm font-sans text-text-secondary">{comp}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         ) : (
           <p className="text-sm text-text-muted italic px-2">No funded competitors identified in this category.</p>
         )}

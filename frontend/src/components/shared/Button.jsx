@@ -11,12 +11,12 @@ export default function Button({
   disabled = false,
   ...props 
 }) {
-  const baseClasses = "inline-flex items-center justify-center gap-2 font-sans font-medium text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95";
+  const baseClasses = "inline-flex items-center justify-center gap-2 font-sans font-medium text-sm transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95";
   
   const variants = {
-    primary: "px-5 py-2.5 rounded-lg bg-accent hover:bg-accent-hover text-white shadow-[0_0_15px_rgba(113,112,255,0.25)] hover:shadow-[0_0_25px_rgba(113,112,255,0.45)]",
-    secondary: "px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-text-secondary hover:text-text-primary border border-white/10 backdrop-blur-md",
-    ghost: "px-3 py-1.5 rounded-lg bg-transparent hover:bg-white/5 text-text-muted hover:text-text-secondary"
+    primary: "px-5 py-2.5 rounded-md bg-accent hover:bg-accent-hover text-white",
+    secondary: "px-4 py-2 rounded-md bg-transparent hover:bg-bg-raised text-text-secondary hover:text-text-primary border border-white/10",
+    ghost: "px-3 py-1.5 rounded-md bg-transparent hover:bg-bg-raised text-text-muted hover:text-text-secondary"
   };
 
   return (

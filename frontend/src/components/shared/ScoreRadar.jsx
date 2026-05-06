@@ -22,9 +22,9 @@ export default function ScoreRadar({ dimensions }) {
   ];
 
   return (
-    <div className="w-full h-80 flex items-center justify-center">
+    <div className="w-full h-72">
       <ResponsiveContainer width="100%" height="100%">
-        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
+        <RadarChart cx="50%" cy="50%" outerRadius="75%" data={data} margin={{ top: 20, right: 40, bottom: 20, left: 40 }}>
           <PolarGrid stroke="#ffffff10" vertical={false} />
           <PolarAngleAxis 
             dataKey="subject" 
