@@ -36,23 +36,26 @@ export default function ReportPage({ report, filename, onNavigate }) {
           
           {/* Header */}
           <div className="flex items-center justify-between border-b border-white/5 pb-6">
-            <div className="space-y-1">
-              <h1 className="text-3xl font-sans font-semibold tracking-tight text-text-primary">
+            <div className="space-y-2">
+              <h1 className="text-5xl font-sans font-light tracking-tighter text-text-primary">
                 {report.scorecard.startup_name}
               </h1>
-              <div className="flex items-center gap-3">
-                <p className="text-xs font-mono text-text-faint">{filename}</p>
-                <span className="text-text-faint/30 text-[10px]">|</span>
-                <p className="text-[10px] font-mono text-text-faint uppercase tracking-wider">Analysed just now</p>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent-light animate-pulse" />
+                  <p className="text-[10px] font-mono text-text-faint uppercase tracking-[0.2em]">Analysed just now</p>
+                </div>
+                <span className="text-text-faint/20 text-xs">—</span>
+                <p className="text-[10px] font-mono text-text-faint uppercase tracking-[0.2em]">{filename}</p>
               </div>
             </div>
             <div className="flex items-center gap-6">
               <div className="flex flex-col items-end">
                 <p className="text-[10px] font-mono uppercase tracking-widest text-text-muted mb-1">Overall Score</p>
                 <span className={`px-4 py-1 rounded-full font-mono text-sm font-semibold border ${
-                  report.scorecard.overall >= 7 ? 'bg-verdict-green-bg text-verdict-green-text border-verdict-green-border' :
-                  report.scorecard.overall >= 4 ? 'bg-verdict-amber-bg text-verdict-amber-text border-verdict-amber-border' :
-                  'bg-verdict-red-bg text-verdict-red-text border-verdict-red-border'
+                  report.scorecard.overall >= 7 ? 'bg-verdict-green-bg text-verdict-green-text border-verdict-green-border shadow-[0_0_15px_rgba(42,194,106,0.3)]' :
+                  report.scorecard.overall >= 4 ? 'bg-verdict-amber-bg text-verdict-amber-text border-verdict-amber-border shadow-[0_0_15px_rgba(217,145,21,0.3)]' :
+                  'bg-verdict-red-bg text-verdict-red-text border-verdict-red-border shadow-[0_0_15px_rgba(255,85,85,0.3)]'
                 }`}>
                   {report.scorecard.overall} / 10
                 </span>

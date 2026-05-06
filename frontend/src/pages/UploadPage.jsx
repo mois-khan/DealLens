@@ -42,12 +42,12 @@ export default function UploadPage({ onUpload, error }) {
         className={`
           w-full max-w-lg rounded-2xl border-2 border-dashed
           flex flex-col items-center justify-center gap-4 py-16 px-8
-          transition-colors duration-150 cursor-pointer
+          transition-all duration-300 cursor-pointer backdrop-blur-md
           ${localError 
             ? 'border-verdict-red-border bg-verdict-red-bg/10' 
             : dragging
-              ? 'border-accent bg-accent/5'
-              : 'border-white/10 hover:border-white/20 bg-bg-surface'
+              ? 'border-accent bg-accent/10 scale-[1.02] shadow-[0_0_30px_rgba(113,112,255,0.1)]'
+              : 'border-white/10 hover:border-white/20 bg-white/5 shadow-card hover:shadow-card-hover hover:-translate-y-1'
           }
         `}
       >

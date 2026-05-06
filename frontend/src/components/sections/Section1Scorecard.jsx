@@ -2,6 +2,7 @@ import React from 'react';
 import ReportCard from '../shared/ReportCard';
 import StatCard from '../shared/StatCard';
 import ScoreBar from '../shared/ScoreBar';
+import ScoreRadar from '../shared/ScoreRadar';
 import Skeleton from '../shared/Skeleton';
 
 export default function Section1Scorecard({ scorecard }) {
@@ -40,19 +41,32 @@ export default function Section1Scorecard({ scorecard }) {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Radar Chart Column */}
         <div className="space-y-4">
           <h3 className="text-sm font-sans font-medium text-text-primary border-b border-white/5 pb-2">
-            Score Breakdown
+            Deal Profile
           </h3>
-          <div className="space-y-5">
-            <ScoreBar label="Founder Credibility" score={scorecard.dimensions.founder_credibility} delay={100} />
-            <ScoreBar label="Market Validity" score={scorecard.dimensions.market_validity} delay={200} />
-            <ScoreBar label="Competitive Moat" score={scorecard.dimensions.competitive_moat} delay={300} />
-            <ScoreBar label="Traction Quality" score={scorecard.dimensions.traction_quality} delay={400} />
-            <ScoreBar label="Financial Soundness" score={scorecard.dimensions.financial_soundness} delay={500} />
+          <div className="flex items-center justify-center p-4 rounded-xl bg-bg-base/30 border border-white/5">
+            <ScoreRadar dimensions={scorecard.dimensions} />
           </div>
         </div>
+
+        {/* Score Bars Column */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-sans font-medium text-text-primary border-b border-white/5 pb-2">
+            Dimension Breakdown
+          </h3>
+          <div className="space-y-4">
+            <ScoreBar label="Founder" score={scorecard.dimensions.founder_credibility} delay={100} />
+            <ScoreBar label="Market" score={scorecard.dimensions.market_validity} delay={200} />
+            <ScoreBar label="Moat" score={scorecard.dimensions.competitive_moat} delay={300} />
+            <ScoreBar label="Traction" score={scorecard.dimensions.traction_quality} delay={400} />
+            <ScoreBar label="Financials" score={scorecard.dimensions.financial_soundness} delay={500} />
+          </div>
+        </div>
+
+        {/* Flags & Strengths Column */}
         <div className="space-y-6">
           <div>
             <h3 className="text-sm font-sans font-medium text-text-primary border-b border-white/5 pb-2 mb-3">

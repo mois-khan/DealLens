@@ -13,15 +13,22 @@ export default function StatCard({ label, value, subtext, variant = 'neutral' })
   }[variant];
 
   return (
-    <div className="shadow-card rounded-xl bg-bg-surface p-4 flex flex-col gap-1">
-      <p className="text-xs font-mono font-medium uppercase tracking-widest text-text-muted">
+    <div className="glass-card p-5 flex flex-col gap-2 hover:scale-[1.02] transition-transform duration-200">
+      <p className="text-[10px] font-mono font-medium uppercase tracking-[0.2em] text-text-muted opacity-60">
         {label}
       </p>
-      <p className={`text-2xl font-mono font-medium ${valueColour}`}>
-        {value}
-      </p>
+      <div className="flex items-baseline gap-2">
+        <p className={`text-5xl font-sans font-light tracking-tighter ${valueColour}`}>
+          {String(value).split(' ')[0]}
+        </p>
+        {String(value).includes('/') && (
+          <p className="text-sm font-mono text-text-faint opacity-40">
+            {String(value).substring(String(value).indexOf('/'))}
+          </p>
+        )}
+      </div>
       {subtext && (
-        <p className="text-xs font-sans text-text-faint leading-snug">
+        <p className="text-[10px] font-sans text-text-faint leading-snug uppercase tracking-wider mt-1">
           {subtext}
         </p>
       )}
