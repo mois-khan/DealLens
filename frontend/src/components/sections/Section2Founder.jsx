@@ -1,6 +1,5 @@
 import React from 'react';
 import ReportCard from '../shared/ReportCard';
-import ThreatCell from '../shared/ThreatCell';
 import Skeleton from '../shared/Skeleton';
 
 export default function Section2Founder({ founder }) {

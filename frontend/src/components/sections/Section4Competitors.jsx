@@ -1,7 +1,5 @@
 import React from 'react';
 import ReportCard from '../shared/ReportCard';
-import DataTable from '../shared/DataTable';
-import ThreatCell from '../shared/ThreatCell';
 import Skeleton from '../shared/Skeleton';
 
 export default function Section4Competitors({ competitors, moat }) {

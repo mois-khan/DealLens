@@ -45,7 +45,7 @@ export default function Section3Claims({ claims }) {
     return data[`claimed_${key}`] || titles[key] || key;
   };
 
-  const filteredClaims = Object.entries(claims).filter(([key, data]) => {
+  const filteredClaims = Object.entries(claims).filter(([, data]) => {
     if (filter === 'All') return true;
     return data.verdict === filter.toUpperCase();
   });

@@ -77,6 +77,7 @@ function ReportRouteWrapper({ liveReport, activeSection, handleNavigate }) {
 
   useEffect(() => {
     if (!liveReport && id) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(true);
       getReport(id)
         .then(data => {
