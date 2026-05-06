@@ -43,26 +43,26 @@ export default function Section1Scorecard({ scorecard }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Radar Chart Column */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-sans font-medium text-text-primary border-b border-white/5 pb-2">
+        <div className="lg:col-span-1 space-y-4">
+          <h3 className="text-[10px] font-mono font-medium uppercase tracking-[0.2em] text-text-muted opacity-50 border-b border-white/5 pb-2">
             Deal Profile
           </h3>
-          <div className="flex items-center justify-center p-4 rounded-xl bg-bg-base/30 border border-white/5">
+          <div className="flex items-center justify-center p-4 rounded-xl bg-gradient-to-b from-white/5 to-transparent border border-white/5 shadow-inset h-[320px]">
             <ScoreRadar dimensions={scorecard.dimensions} />
           </div>
         </div>
 
         {/* Score Bars Column */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-sans font-medium text-text-primary border-b border-white/5 pb-2">
+        <div className="lg:col-span-1 space-y-4">
+          <h3 className="text-[10px] font-mono font-medium uppercase tracking-[0.2em] text-text-muted opacity-50 border-b border-white/5 pb-2">
             Dimension Breakdown
           </h3>
-          <div className="space-y-4">
-            <ScoreBar label="Founder" score={scorecard.dimensions.founder_credibility} delay={100} />
-            <ScoreBar label="Market" score={scorecard.dimensions.market_validity} delay={200} />
-            <ScoreBar label="Moat" score={scorecard.dimensions.competitive_moat} delay={300} />
-            <ScoreBar label="Traction" score={scorecard.dimensions.traction_quality} delay={400} />
-            <ScoreBar label="Financials" score={scorecard.dimensions.financial_soundness} delay={500} />
+          <div className="space-y-6 pt-4">
+            <ScoreBar label="Founder Credibility" score={scorecard.dimensions.founder_credibility} delay={100} />
+            <ScoreBar label="Market Validity" score={scorecard.dimensions.market_validity} delay={200} />
+            <ScoreBar label="Competitive Moat" score={scorecard.dimensions.competitive_moat} delay={300} />
+            <ScoreBar label="Traction Quality" score={scorecard.dimensions.traction_quality} delay={400} />
+            <ScoreBar label="Financial Soundness" score={scorecard.dimensions.financial_soundness} delay={500} />
           </div>
         </div>
 
