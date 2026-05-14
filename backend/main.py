@@ -26,7 +26,15 @@ async def health():
     return {"status": "ok", "version": "2.0.0"}
 
 # Mount the built frontend static files
-frontend_dist = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "dist")
+# In production, frontend/dist is at the same level as backend/ or one level up
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# Try different potential locations for frontend/dist
+frontend_dist = os.path.abspath(os.path.join(current_dir, "..", "frontend", "dist"))
+
+if not os.path.isdir(frontend_dist):
+    # Fallback for some deployment structures
+    frontend_dist = os.path.abspath(os.path.join(current_dir, "frontend", "dist"))
+
 if os.path.isdir(frontend_dist):
     app.mount("/assets", StaticFiles(directory=os.path.join(frontend_dist, "assets")), name="assets")
     
@@ -38,3 +46,5 @@ if os.path.isdir(frontend_dist):
             return FileResponse(requested_file)
         # Otherwise, fall back to index.html for React Router
         return FileResponse(os.path.join(frontend_dist, "index.html"))
+else:
+    print(f"WARNING: Frontend distribution directory not found at {frontend_dist}")
