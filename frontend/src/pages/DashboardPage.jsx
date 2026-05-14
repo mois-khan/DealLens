@@ -158,8 +158,11 @@ function DealCard({ deal, onStatusChange, onDetailedReport, analyzing, index, on
         <div className="flex items-start gap-3">
           <ScoreRing score={deal.overall_score} />
           <button 
-            onClick={() => onDelete(deal.id)}
-            className="text-text-faint hover:text-verdict-red-text transition-colors p-1 mt-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(deal.id);
+            }}
+            className="text-text-faint hover:text-verdict-red-text transition-colors p-1 mt-1 relative z-20 cursor-pointer"
             title="Permanently Delete"
           >
             <Icon name="Trash2" className="w-4 h-4" />
@@ -258,7 +261,9 @@ export default function DashboardPage() {
   }, []);
 
   const handleDelete = async (dealId) => {
-    if (!window.confirm("Are you sure you want to permanently delete this deal? This action cannot be undone.")) return;
+    // Basic confirmation
+    if (!window.confirm("Are you sure you want to permanently delete this pitch deck?")) return;
+    
     try {
       await deleteDeal(dealId);
       await fetchDeals();

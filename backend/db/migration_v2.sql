@@ -51,6 +51,9 @@ CREATE POLICY "Public insert analyses" ON analyses FOR INSERT WITH CHECK (true);
 DROP POLICY IF EXISTS "Public update analyses" ON analyses;
 CREATE POLICY "Public update analyses" ON analyses FOR UPDATE USING (true);
 
+DROP POLICY IF EXISTS "Public delete analyses" ON analyses;
+CREATE POLICY "Public delete analyses" ON analyses FOR DELETE USING (true);
+
 DROP POLICY IF EXISTS "Public read preferences" ON investor_preferences;
 CREATE POLICY "Public read preferences" ON investor_preferences FOR SELECT USING (true);
 
