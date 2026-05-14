@@ -23,6 +23,12 @@
 | 10 | 06 May 2026 | Antigravity (AI) & User | **Finalized Premium Visuals & Spec Alignment (Phase 3 Complete).** Implemented expandable claim rows, result filtering, and moat verdict banner. Added staggered ScoreBar animations, dynamic initials avatars, and header metadata. Final audit: App is 100% compliant with Architecture, Design, and Page Spec docs. |
 | 11 | 06 May 2026 | Antigravity (AI) & User | **Finalized Premium Design & Intelligence Evolution.** Transformed the app into a "World-Class" product. Implemented Glassmorphism, Noise Textures, Neon Glow Accents, High-Contrast Typography, and a Radar (Spider) Chart for deal profiling. Added a Live AI Thinking Console to the sidebar. |
 | 12 | 06 May 2026 | Antigravity (AI) & User | **Deployment & Network Routing Optimization.** Configured FastAPI backend to serve built React frontend static files. Made frontend API paths dynamic. Enabled seamless full-stack app sharing via a single Ngrok tunnel. |
+| 13 | 06 May 2026 | Antigravity (AI) & User | **Finalized Investor-Grade UX & Immersive Visuals.** Implemented single-page landing with floating interactive preview cards and drag-reaction system. Built horizontal SVG pipeline for LoadingPage. Redesigned Sections 2 & 4 to Dossier-style layout. Added scroll-reveal animations and high-impact header scoring. |
+| 14 | 06 May 2026 | Antigravity (AI) & User | **Finalized AI Accuracy & Traceability.** Locked Gemini to `temperature=0.0` for deterministic scoring. Enforced raw HTTP URL returns in prompts. Updated `ExpandableRow` with clickable source links. Fixed competitor map to exclude the target startup. |
+| 15 | 08 May 2026 | Codex (AI) & User | **Loading Pipeline v2 + Stability Fixes.** Rebuilt `/loading` as a 5-stage straight pipeline with a camera-walk feel (zoom, travel, settle), added a top HUD card with typewriter text + micro-animations, removed checkmarks/arrows, and clamped camera to scene bounds so stage 5 stays visible. Separated gray baseline track from subtle progress overlay (no full-purple bar). Renamed stage 3 to **Competitor Map** across node + card. Updated Report header to show traceability stats and question anchoring metrics. Added minor backend client import annotations for static analysis. |
+| 16 | 08 May 2026 | Cursor (AI) & User | **UX Reliability + Investor Demo Polish.** Hardened `/loading` camera framing and stage flow, added global drag-drop upload handling, enforced backend-authoritative report hydration with retry for delayed question payloads, filtered startup self-name from competitor map, and applied then refined premium report header styling based on live feedback. |
+| 17 | 09 May 2026 | Antigravity (AI) & User | **CRM Transformation & Intelligence Fallback.** Transformed DealLens into a full Investor CRM. Implemented smart pipeline buckets (Inbox, Favourites, Accepted, Rejected, Disqualified) with automated triage logic based on investor preferences. Built retroactive status updates for existing deals. Added AI-powered founder discovery fallback to the analysis pipeline. Polished Dashboard with animated stats, interactive cards, and manual action buttons. Cleansed 91 junk records from database and hardened UI stats accuracy. Made Report logo redirect back to upload page. Implemented permanent deal deletion and ensured strict new-to-old chronological sorting across all views. |
+| 18 | 10 May 2026 | Antigravity (AI) & User | **Zero-Wait Submission & Automated Investor Outreach.** Decoupled the submission flow from the AI analysis using `BackgroundTasks` for a "lightning-fast" founder experience. Integrated `aiosmtplib` for automated, personalized email acknowledgements (SMTP). Refactored `SubmitPage` for instant confirmation. Implemented "Request Meeting" feature in reports with automated outreach. Polished DealCard UI with text labels and removed Disqualify button for a cleaner inbox. |
 
 *Update this table at the end of every session. One row per session.*
 
@@ -81,6 +87,7 @@
 - [x] `services/serper_client.py` — search wrapper + 10s timeout
 - [x] `services/crunchbase_client.py` — founder + startup lookup + 10s timeout
 - [x] `db/supabase_client.py` — `save_report()` and `get_report()` functions
+- [x] `services/email_service.py` — Async SMTP wrapper for automated emails
 
 ### Pipeline Modules
 
@@ -130,6 +137,20 @@
 - [x] Error handling: all module failures return correct status codes
 - [x] Retry logic verified: 429 from Gemini does not crash the request
 
+### Automated Outreach & Zero-Wait Flow
+
+- [x] **Zero-Wait Submission (`routers/analyse.py`)**
+  - [x] Decoupled PDF processing using `FastAPI.BackgroundTasks`
+  - [x] Immediate "success" response (sub-1s) for founders
+- [x] **Investor Email Automation (`services/email_service.py`)**
+  - [x] Async SMTP integration via `aiosmtplib`
+  - [x] Automated receipt acknowledgement to founders
+  - [x] Automated meeting request emails from the Report page
+- [x] **Triage Engine Evolution**
+  - [x] Automated category-based status assignment (Inbox/Rejected/Disqualified)
+  - [x] Retroactive preference syncing across existing deals
+  - [x] Refined DealCard UI with text labels and streamlined actions
+
 ---
 
 ## Frontend Progress
@@ -156,11 +177,14 @@
 ### Pages & Sections
 
 - [x] **`UploadPage.jsx`**
-  - [x] Drag-drop states + 🔒 trust signals
-  - [x] Error auto-clearing (3s)
+  - [x] Single-page standing view (no scroll)
+  - [x] Floating interactive preview cards with interactive hover
+  - [x] Immersive drag-drop reaction system (background intensification + card retreat)
+  - [x] 🔒 trust signals
 
 - [x] **`LoadingPage.jsx`**
-  - [x] Optimistic progress bar
+  - [x] Horizontal SVG Pipeline visualization (Wave pattern)
+  - [x] Pulsing nodes + traveling glow dot animations
   - [x] 8-second rotating investor insight cards
 
 - [x] **`ReportPage.jsx`** — sidebar + scroll layout
@@ -172,7 +196,9 @@
 
 - [x] **`Section2Founder.jsx`**
   - [x] Initials-based avatar + role identity
-  - [x] Credibility vs Risk grid
+  - [x] "Executive Intelligence Brief" dossier layout
+  - [x] Domain Fit overlapping badge
+  - [x] Credibility vs Risk grid with semantic borders
   - [x] Public Intelligence banner (Tavily/Crunchbase)
 
 - [x] **`Section3Claims.jsx`**
@@ -180,8 +206,9 @@
   - [x] Expandable rows exposing Evidence + Sources + Questions
 
 - [x] **`Section4Competitors.jsx`**
-  - [x] Moat Verdict Summary Banner (Verdict-coloured)
-  - [x] Competitor Map Table
+  - [x] Moat Verdict Summary Banner (Verdict-coloured dossier)
+  - [x] 2-column Competitive Map layout
+  - [x] Funded Competitors chip map (Serper)
 
 - [x] **`Section5Questions.jsx`**
   - [x] "Copy all questions" button with visual feedback
@@ -211,10 +238,13 @@
 | 8 | Use initials-based avatars for founders | Personalizes the report without requiring a real profile image | `Section2Founder.jsx` |
 | 9 | Add specific "Source" field to claims | Builds trust by showing the AI "showed its work" | `ExpandableRow.jsx` |
 | 10 | Implement manual filters in Section 3 | Provides high utility for investors scanning for red flags | `Section3Claims.jsx` |
+| 11 | Set AI temperature to 0.0 | Guarantees deterministic, repeatable results for judge demos | `gemini_client.py` |
+| 12 | Exclude target startup from competitors | Prevents the AI from listing the company as its own competitor | `moat_tester.py` |
+| 13 | Force raw URLs for sources | Enables one-click verification of claims for investor trust | `ExpandableRow.jsx` |
 
 ---
 
 ## 🚀 HACKATHON READY
 **Project Status**: 100% COMPLETE.
-**Last Sync**: 06 May 2026.
+**Last Sync**: 08 May 2026.
 **Primary Value**: Automated Due DiligenceBrief with automated investor questions.

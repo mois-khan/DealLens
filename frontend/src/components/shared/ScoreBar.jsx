@@ -25,24 +25,29 @@ export default function ScoreBar({ label, score, maxScore = 10, delay = 0 }) {
     score >= 4 ? 'text-verdict-amber-text'  :
                  'text-verdict-red-text';
 
+  const bgTint =
+    score >= 7 ? 'bg-verdict-green-bg/30'  :
+    score >= 4 ? 'bg-verdict-amber-bg/30'  :
+                 'bg-verdict-red-bg/30';
+
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-sans font-medium text-text-secondary">
-          {label}
-        </span>
-        <span className={`font-mono font-medium text-sm ${textColour}`}>
-          {score}<span className="text-text-faint text-xs"> / {maxScore}</span>
-        </span>
-      </div>
+    <div className={`flex items-center gap-4 rounded-lg px-4 py-3 ${bgTint} border border-white/[0.03]`}>
+      {/* Label */}
+      <span className="text-[11px] font-mono font-medium uppercase tracking-wider text-text-muted w-40 flex-shrink-0">
+        {label}
+      </span>
       {/* Track */}
-      <div className="h-1.5 w-full rounded-full bg-score-track">
+      <div className="flex-1 h-2.5 rounded-full bg-score-track overflow-hidden">
         {/* Fill */}
         <div
-          className={`h-1.5 rounded-full transition-all duration-1000 ease-out ${colour}`}
+          className={`h-full rounded-full transition-all duration-1000 ease-out ${colour}`}
           style={{ width: `${width}%` }}
         />
       </div>
+      {/* Score Value */}
+      <span className={`font-mono font-bold text-base tabular-nums w-12 text-right ${textColour}`}>
+        {score}<span className="text-text-faint text-xs font-normal">/{maxScore}</span>
+      </span>
     </div>
   );
 }

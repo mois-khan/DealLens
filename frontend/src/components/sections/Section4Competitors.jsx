@@ -70,7 +70,7 @@ export default function Section4Competitors({ competitors, moat }) {
               <div className="col-span-3">Scale</div>
               <div className="col-span-2 text-right">Threat</div>
             </div>
-            
+
             {/* Table Body */}
             <div className="divide-y divide-white/5">
               {competitors.map((comp, i) => {

@@ -18,9 +18,10 @@ export default function VerdictBadge({ verdict }) {
   const v = VARIANTS[key] || VARIANTS.partial;
   return (
     <span className={`
-      inline-flex items-center px-2 py-0.5 rounded-full
-      text-xs font-mono font-medium uppercase tracking-wide
+      inline-flex items-center px-2.5 py-1 rounded-sm
+      text-[10px] font-mono font-bold uppercase tracking-widest
       border ${v.bg} ${v.text} ${v.border} ${v.shadow}
+      backdrop-blur-sm shadow-sm
     `}>
       {v.label}
     </span>

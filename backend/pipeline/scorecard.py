@@ -1,7 +1,7 @@
 import logging
 import json
 from prompts.scorecard import SYSTEM
-from services.gemini_client import call_gemini, parse_json
+from services.gemini_client import call_gemini, parse_json, FLASH_LITE
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ async def generate_scorecard(full_context: dict) -> dict:
     user_prompt += json.dumps(full_context, indent=2)
 
     try:
-        response_text = await call_gemini(system=SYSTEM, user=user_prompt)
+        response_text = await call_gemini(system=SYSTEM, user=user_prompt, model=FLASH_LITE)
         return parse_json(response_text)
     except Exception as e:
         logger.error(f"[scorecard] Scorecard generation failed: {e}")

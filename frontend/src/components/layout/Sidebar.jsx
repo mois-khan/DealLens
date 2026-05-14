@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 /**
  * Main navigation sidebar.
@@ -6,7 +7,7 @@ import React from 'react';
  */
 const NAV_ITEMS = [
   { id: 'scorecard',   label: 'Deal Scorecard',     eyebrow: '01' },
-  { id: 'founder',     label: 'Founder Intelligence', eyebrow: '02' },
+  { id: 'founder',     label: 'Founder Card',       eyebrow: '02' },
   { id: 'claims',      label: 'Claim Verification', eyebrow: '03' },
   { id: 'competitors', label: 'Competitor Map',     eyebrow: '04' },
   { id: 'questions',   label: 'Investor Questions', eyebrow: '05' },
@@ -17,9 +18,9 @@ export default function Sidebar({ active, onNavigate, filename = 'deck.pdf' }) {
     <aside className="fixed left-0 top-0 h-full w-56 glass-panel flex flex-col z-40">
       {/* Brand */}
       <div className="px-5 py-4 border-b border-white/5">
-        <span className="text-base font-sans font-semibold text-text-primary">
+        <Link to="/" className="text-base font-sans font-semibold text-text-primary hover:text-accent-light transition-colors block">
           Deal<span className="text-accent-light">Lens</span>
-        </span>
+        </Link>
       </div>
 
       {/* Nav items */}

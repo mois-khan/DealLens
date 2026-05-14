@@ -33,7 +33,7 @@ async def test_moat(moat_claims: list[dict], serper_results: list[dict], startup
             user_prompt += f"Snippet: {res.get('snippet', '')}\n\n"
 
     try:
-        system_prompt = SYSTEM.format(startup_name=startup_name)
+        system_prompt = SYSTEM.replace("[STARTUP_NAME]", startup_name)
         response_text = await call_gemini(system=system_prompt, user=user_prompt)
         verdict = parse_json(response_text)
         verdict["competitors"] = _validate_competitors(verdict.get("competitors", []))

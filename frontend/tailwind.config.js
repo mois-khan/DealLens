@@ -69,12 +69,79 @@ export default {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         }
+        ,
+        cardIn: {
+          '0%': { opacity: '0', transform: 'translateY(14px) scale(0.96)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+        },
+        scanY: {
+          '0%': { transform: 'translateY(-22px)', opacity: '0' },
+          '15%': { opacity: '1' },
+          '85%': { opacity: '1' },
+          '100%': { transform: 'translateY(68px)', opacity: '0' },
+        },
+        dotPulse: {
+          '0%, 100%': { transform: 'translateY(0px)', opacity: '0.35' },
+          '50%': { transform: 'translateY(-3px)', opacity: '1' },
+        },
+        travelX: {
+          '0%': { transform: 'translateX(0px)', opacity: '0.25' },
+          '10%': { opacity: '1' },
+          '90%': { opacity: '1' },
+          '100%': { transform: 'translateX(62px)', opacity: '0.25' },
+        },
+        revealWipe: {
+          '0%': { backgroundPosition: '200% 0', opacity: '0.65' },
+          '100%': { backgroundPosition: '-200% 0', opacity: '0.9' },
+        },
+        bob: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-4px)' },
+        },
+        caretBlink: {
+          '0%, 45%': { opacity: '0.15' },
+          '46%, 100%': { opacity: '0.85' },
+        },
+        floatSlow: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        floatTilt: {
+          '0%, 100%': { transform: 'translateY(0px) rotate(-1deg)' },
+          '50%': { transform: 'translateY(-8px) rotate(1deg)' },
+        },
+        pulseGlow: {
+          '0%, 100%': { boxShadow: '0 0 0 rgba(113,112,255,0.0)' },
+          '50%': { boxShadow: '0 0 28px rgba(113,112,255,0.22)' },
+        },
+        scaleIn: {
+          '0%': { opacity: '0', transform: 'scale(0.92)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        slideInLeft: {
+          '0%': { opacity: '0', transform: 'translateX(-16px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
       },
       animation: {
         shimmer: 'shimmer 1.5s infinite',
         fadeIn: 'fadeIn 0.5s ease-out both',
+        cardIn: 'cardIn 420ms cubic-bezier(0.2, 0.9, 0.2, 1) both',
+        scanY: 'scanY 1.2s cubic-bezier(0.2, 0.9, 0.2, 1) infinite',
+        dotPulse: 'dotPulse 900ms ease-in-out infinite',
+        travelX: 'travelX 1.1s ease-in-out infinite',
+        revealWipe: 'revealWipe 1.6s linear infinite',
+        bob: 'bob 1.2s ease-in-out infinite',
+        caretBlink: 'caretBlink 900ms steps(1, end) infinite',
+        floatSlow: 'floatSlow 5.5s ease-in-out infinite',
+        floatTilt: 'floatTilt 6.5s ease-in-out infinite',
+        pulseGlow: 'pulseGlow 3s ease-in-out infinite',
+        scaleIn: 'scaleIn 0.4s cubic-bezier(0.2, 0.9, 0.2, 1) both',
+        slideInLeft: 'slideInLeft 0.4s cubic-bezier(0.2, 0.9, 0.2, 1) both',
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 }

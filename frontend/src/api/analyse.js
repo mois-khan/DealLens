@@ -1,7 +1,11 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL 
-  || (window.location.hostname !== 'localhost' && window.location.port !== '5173' ? '' : 'http://localhost:8000');
+let API_URL = import.meta.env.VITE_API_URL || '';
+
+if (!API_URL) {
+  // Fallback if VITE_API_URL is not set
+  API_URL = window.location.port === '5173' ? 'http://localhost:8000' : '';
+}
 
 export async function analyseDeck(file) {
   const formData = new FormData();
@@ -22,5 +26,14 @@ export async function analyseDeck(file) {
 
 export async function getReport(reportId) {
   const response = await axios.get(`${API_URL}/report/${reportId}`);
+  return response.data;
+}
+
+export async function chatWithDeal(message, history, rawText) {
+  const response = await axios.post(`${API_URL}/chat`, {
+    message,
+    history,
+    raw_text: rawText
+  });
   return response.data;
 }

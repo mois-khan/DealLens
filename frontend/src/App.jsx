@@ -3,8 +3,9 @@ import { BrowserRouter, Routes, Route, useNavigate, useParams } from 'react-rout
 import UploadPage from './pages/UploadPage';
 import LoadingPage from './pages/LoadingPage';
 import ReportPage from './pages/ReportPage';
+import SubmitPage from './pages/SubmitPage';
+import DashboardPage from './pages/DashboardPage';
 import NotFound from './pages/NotFound';
-import { mockReport } from './data/mockReport';
 import { analyseDeck, getReport } from './api/analyse';
 
 function DealLensFlow() {
@@ -16,11 +17,12 @@ function DealLensFlow() {
 
   const handleUpload = async (file) => {
     setUploadError(null);
+    setCurrentStep(1);
+    setLiveReport(null);
     navigate('/loading');
     
     // Optimistic loading animation (caps at step 4 until the API resolves)
     let step = 1;
-    setCurrentStep(1);
     const interval = setInterval(() => {
       step = step < 4 ? step + 1 : 4; 
       setCurrentStep(step);
@@ -32,8 +34,8 @@ function DealLensFlow() {
       setCurrentStep(5);
       setLiveReport(data);
       
-      // Short delay so the user sees the final "Done" state
-      setTimeout(() => navigate(`/report/${data.report_id}`), 1000);
+      // Let the loading scene travel to step 5, show the final card, then zoom out.
+      setTimeout(() => navigate(`/report/${data.report_id}`), 5000);
       
     } catch (err) {
       clearInterval(interval);
@@ -54,6 +56,8 @@ function DealLensFlow() {
   return (
     <Routes>
       <Route path="/" element={<UploadPage onUpload={handleUpload} error={uploadError} />} />
+      <Route path="/submit" element={<SubmitPage />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/loading" element={<LoadingPage currentStep={currentStep} />} />
       <Route 
         path="/report/:id" 
@@ -74,31 +78,77 @@ function ReportRouteWrapper({ liveReport, activeSection, handleNavigate }) {
   const { id } = useParams();
   const [reportData, setReportData] = useState(liveReport);
   const [loading, setLoading] = useState(!liveReport && id);
+  const [fetchError, setFetchError] = useState(null);
 
   useEffect(() => {
-    if (!liveReport && id) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setLoading(true);
-      getReport(id)
-        .then(data => {
+    if (!id) return;
+
+    let cancelled = false;
+    const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    const hydrateReportFromBackend = async () => {
+      // Always render fast if we already have local live data,
+      // but still refresh from backend as the source of truth.
+      if (liveReport) {
+        setReportData(liveReport);
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+
+      setFetchError(null);
+
+      const maxAttempts = 5;
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        try {
+          const data = await getReport(id);
+          if (cancelled) return;
+
           setReportData(data);
-          setLoading(false);
-        })
-        .catch(err => {
+
+          const hasQuestions = Array.isArray(data?.questions) && data.questions.length > 0;
+          const isLastAttempt = attempt === maxAttempts;
+
+          // Retry briefly if report exists but questions are still empty
+          // to avoid showing a false "not generated" state from transient lag.
+          if (hasQuestions || isLastAttempt) {
+            setLoading(false);
+            return;
+          }
+        } catch (err) {
+          if (cancelled) return;
           console.error("Failed to fetch report:", err);
-          setLoading(false);
-        });
-    }
+          if (attempt === maxAttempts) {
+            setFetchError("Could not load report from backend.");
+            setLoading(false);
+            return;
+          }
+        }
+
+        await wait(1200);
+      }
+    };
+
+    hydrateReportFromBackend();
+
+    return () => {
+      cancelled = true;
+    };
   }, [id, liveReport]);
 
   if (loading) {
     return <div className="min-h-screen bg-[#08090a] flex items-center justify-center text-[#8a8f98]">Loading report...</div>;
   }
 
+  if (fetchError || !reportData) {
+    return <NotFound />;
+  }
+
   return (
     <ReportPage 
-      report={reportData || mockReport}
-      filename={reportData ? reportData.file_name : "Pitch-Example-Air-BnB-PDF.pdf"}
+      report={reportData}
+      reportId={id}
+      filename={reportData.file_name || "report.pdf"}
       activeSection={activeSection}
       onNavigate={handleNavigate}
     />
