@@ -185,51 +185,50 @@ function DealCard({ deal, onStatusChange, onDetailedReport, analyzing, index, on
         )}
       </div>
 
-      {/* Actions Section */}
-      <div className="mt-5 pt-4 border-t border-border-subtle flex items-center gap-1.5 relative z-10">
+      <div className="mt-5 pt-4 border-t border-border-subtle flex items-center gap-2 relative z-10">
         {deal.status !== 'accepted' && (
           <button
             onClick={() => onStatusChange(deal.id, 'accepted')}
-            className="action-btn action-btn-accept flex-1 whitespace-nowrap"
+            className="action-btn action-btn-accept flex-1 min-w-0 whitespace-nowrap px-3 py-2.5"
             title="Accept"
           >
-            <Icon name="CheckCircle2" className="w-4 h-4" />
+            <Icon name="CheckCircle2" className="w-4 h-4 shrink-0" />
             <span className="hidden sm:inline">Accept</span>
           </button>
         )}
         {deal.status !== 'rejected' && (
           <button
             onClick={() => onStatusChange(deal.id, 'rejected')}
-            className="action-btn action-btn-reject flex-1 whitespace-nowrap"
+            className="action-btn action-btn-reject flex-1 min-w-0 whitespace-nowrap px-3 py-2.5"
             title="Reject"
           >
-            <Icon name="XCircle" className="w-4 h-4" />
+            <Icon name="XCircle" className="w-4 h-4 shrink-0" />
             <span className="hidden sm:inline">Reject</span>
           </button>
         )}
         {deal.status !== 'favourite' && (
           <button
             onClick={() => onStatusChange(deal.id, 'favourite')}
-            className="action-btn action-btn-favourite flex-1 whitespace-nowrap"
+            className="action-btn action-btn-favourite flex-1 min-w-0 whitespace-nowrap px-3 py-2.5"
             title="Favourite"
           >
-            <Icon name="Star" className="w-4 h-4" />
+            <Icon name="Star" className="w-4 h-4 shrink-0" />
             <span className="hidden sm:inline">Fav</span>
           </button>
         )}
         <button
           onClick={() => onDetailedReport(deal.id)}
           disabled={analyzing === deal.id}
-          className="action-btn action-btn-primary flex-[1.5] whitespace-nowrap"
+          className="action-btn action-btn-primary flex-[1.5] min-w-0 whitespace-nowrap px-3 py-2.5"
         >
           {analyzing === deal.id ? (
             <>
-              <Icon name="Loader2" className="w-4 h-4 animate-spin" />
-              <span className="text-[10px]">Analyzing</span>
+              <Icon name="Loader2" className="w-4 h-4 animate-spin shrink-0" />
+              <span className="text-[10px] hidden sm:inline">Analyzing</span>
             </>
           ) : (
             <>
-              <Icon name="FileText" className="w-4 h-4" />
+              <Icon name="FileText" className="w-4 h-4 shrink-0" />
               <span>Report</span>
             </>
           )}
@@ -477,7 +476,7 @@ export default function DashboardPage() {
               )}
             </div>
           ) : (
-            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 pb-12">
+            <div className="grid gap-8 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 pb-12">
               {filteredDeals.map((deal, i) => (
                 <DealCard
                   key={deal.id}
