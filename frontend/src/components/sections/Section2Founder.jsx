@@ -60,7 +60,7 @@ export default function Section2Founder({ founder }) {
               <span className="w-1.5 h-1.5 rounded-full bg-accent-light" />
               Executive Summary
             </h3>
-            <p className="text-[14px] sm:text-[15px] font-sans text-text-secondary leading-relaxed">
+            <p className="text-[15px] sm:text-[15px] font-sans text-text-primary leading-relaxed">
               {founder.verdict || founder.explanation}
             </p>
           </div>
@@ -136,7 +136,7 @@ export default function Section2Founder({ founder }) {
                   <span className="text-[9px] font-mono text-accent-light/70 uppercase tracking-widest px-2 py-0.5 rounded border border-accent/20 bg-accent/10">CRUNCHBASE</span>
                 </div>
               </div>
-              <p className="text-[13px] font-sans text-text-secondary leading-relaxed border-l-2 border-accent/30 pl-4 py-1">
+              <p className="text-[14px] sm:text-[13px] font-sans text-text-primary leading-relaxed border-l-2 border-accent/30 pl-4 py-1">
                 {founder.public_summary || "No public intelligence available for this profile."}
               </p>
             </div>

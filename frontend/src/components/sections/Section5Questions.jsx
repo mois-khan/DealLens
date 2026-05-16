@@ -71,9 +71,9 @@ export default function Section5Questions({ questions }) {
     <div ref={sectionRef}>
       <ReportCard eyebrow="05" title="Investor Questions">
         {/* Section Header */}
-        <div className="flex items-start justify-between mb-6 pb-4 border-b border-white/5">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6 pb-4 border-b border-white/5">
           <div>
-            <p className="text-sm text-text-secondary leading-relaxed max-w-lg">
+            <p className="text-[15px] sm:text-sm text-text-primary leading-relaxed max-w-lg">
               The top questions to ask the founding team, ranked by priority based on gaps found in the analysis.
             </p>
             <div className="flex items-center gap-4 mt-2">
@@ -90,7 +90,7 @@ export default function Section5Questions({ questions }) {
               )}
             </div>
           </div>
-          <Button variant="ghost" onClick={handleCopy} className="text-xs flex-shrink-0">
+          <Button variant="ghost" onClick={handleCopy} className="text-[10px] sm:text-xs flex-shrink-0 whitespace-nowrap">
             {copied ? '✓ Copied to clipboard' : '⎘ Copy All Questions'}
           </Button>
         </div>
