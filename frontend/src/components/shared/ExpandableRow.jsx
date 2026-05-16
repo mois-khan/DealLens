@@ -29,10 +29,10 @@ export default function ExpandableRow({ claim, verdict, evidence, source, questi
     <div className="border-b border-white/[0.03] last:border-0">
       {/* ── ROW HEADER ── */}
       <div 
-        className="group flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-bg-raised/50 transition-colors"
+        className="group flex items-center justify-between px-4 sm:px-5 py-4 cursor-pointer hover:bg-bg-raised/50 transition-colors"
         onClick={() => setOpen(!open)}
       >
-        <div className="flex items-center gap-4 flex-1 pr-6">
+        <div className="flex items-center gap-3 sm:gap-4 flex-1 pr-4 sm:pr-6">
           <span className={`text-[10px] font-mono text-text-faint transition-transform duration-300 ${open ? 'rotate-180' : ''}`}>
             ▼
           </span>
@@ -41,7 +41,7 @@ export default function ExpandableRow({ claim, verdict, evidence, source, questi
           </span>
         </div>
         
-        <div className="flex items-center gap-6 flex-shrink-0">
+        <div className="flex items-center gap-3 sm:gap-6 flex-shrink-0">
           <VerdictBadge variant={getVariant(verdict)} />
           <span className="text-[10px] font-mono uppercase tracking-wider text-accent-light opacity-0 group-hover:opacity-100 transition-opacity w-24 text-right">
             {open ? 'Hide details' : 'View evidence'}
@@ -51,7 +51,7 @@ export default function ExpandableRow({ claim, verdict, evidence, source, questi
 
       {/* ── EXPANDED DOSSIER ── */}
       {open && (
-        <div className={`bg-bg-base/40 px-5 py-6 border-l-2 ${leftBorderColor} ml-[18px] mb-4 mt-1 rounded-r-xl mr-5 animate-fadeIn`}>
+        <div className={`bg-bg-base/40 px-4 sm:px-5 py-5 sm:py-6 border-l-2 ${leftBorderColor} ml-0 sm:ml-[18px] mb-4 mt-1 rounded-r-xl mr-4 sm:mr-5 animate-fadeIn`}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             
             {/* Left Column: Evidence & Source */}
@@ -75,7 +75,7 @@ export default function ExpandableRow({ claim, verdict, evidence, source, questi
                       href={source} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-[11px] font-mono text-accent-light bg-accent/10 border border-accent/20 px-2.5 py-1 rounded inline-flex items-center gap-2 hover:bg-accent/20 transition-colors"
+                      className="text-[11px] font-mono text-accent-light bg-accent/10 border border-accent/20 px-2.5 py-1 rounded inline-flex items-center gap-2 hover:bg-accent/20 transition-colors max-w-full break-all"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {source}
@@ -84,7 +84,7 @@ export default function ExpandableRow({ claim, verdict, evidence, source, questi
                       </svg>
                     </a>
                   ) : (
-                    <p className="text-[11px] font-mono text-accent-light bg-accent/10 border border-accent/20 px-2.5 py-1 rounded inline-block">
+                    <p className="text-[11px] font-mono text-accent-light bg-accent/10 border border-accent/20 px-2.5 py-1 rounded inline-block max-w-full break-all">
                       {source}
                     </p>
                   )}
