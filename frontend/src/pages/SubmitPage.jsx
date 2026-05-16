@@ -41,7 +41,7 @@ export default function SubmitPage() {
   // ── Success State ──────────────────────────────────────────────────────────
   if (result) {
     return (
-      <div className="min-h-screen bg-bg-base flex items-center justify-center px-4">
+      <div className="min-h-screen bg-bg-base flex items-center justify-center px-4 sm:px-6">
         <div className="max-w-md w-full text-center animate-fadeIn">
           {/* Success Icon */}
           <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-verdict-green-bg border border-verdict-green-border flex items-center justify-center">
@@ -81,17 +81,17 @@ export default function SubmitPage() {
 
   // ── Form State ─────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-bg-base flex items-center justify-center px-4">
+      <div className="min-h-screen bg-bg-base flex items-center justify-center px-4 sm:px-6">
       <div className="max-w-lg w-full">
         {/* Header */}
         <div className="text-center mb-10">
           <h1 className="text-2xl font-sans font-semibold tracking-tight text-text-primary mb-2">
             Deal<span className="text-accent-light">Lens</span>
           </h1>
-          <h2 className="text-3xl md:text-4xl font-sans font-bold text-white mb-3">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-sans font-bold text-white mb-3">
             Submit Your Pitch Deck
           </h2>
-          <p className="text-text-secondary font-sans">
+          <p className="text-sm sm:text-base text-text-secondary font-sans">
             Fill in your details and upload your pitch deck for investor review.
           </p>
         </div>
@@ -215,7 +215,7 @@ export default function SubmitPage() {
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-center gap-6 mt-8">
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-8">
           <span className="flex items-center gap-1.5 text-[11px] font-mono text-text-faint">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />

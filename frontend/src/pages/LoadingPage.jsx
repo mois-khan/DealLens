@@ -463,8 +463,8 @@ export default function LoadingPage({ currentStep }) {
   }, [machine, prefersReducedMotion]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden bg-bg-base">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[620px] h-[620px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden bg-bg-base">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] sm:w-[620px] sm:h-[620px] bg-accent/5 blur-[140px] sm:blur-[150px] rounded-full pointer-events-none" />
 
       <div className="w-full max-w-[1400px] relative z-10 space-y-6">
         <div className="text-center space-y-2">
@@ -479,7 +479,7 @@ export default function LoadingPage({ currentStep }) {
 
         <div
           ref={viewportRef}
-          className="w-full h-[460px] rounded-3xl bg-gradient-to-b from-bg-surface/30 via-bg-panel/20 to-bg-base/40 border border-white/[0.06] shadow-card overflow-hidden relative"
+          className="w-full h-[320px] sm:h-[460px] rounded-3xl bg-gradient-to-b from-bg-surface/30 via-bg-panel/20 to-bg-base/40 border border-white/[0.06] shadow-card overflow-hidden relative"
         >
           {/* Atmosphere layer */}
           <div className="absolute inset-0 pointer-events-none">
@@ -489,7 +489,7 @@ export default function LoadingPage({ currentStep }) {
             <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_40%,rgba(0,0,0,0)_0%,rgba(0,0,0,0.45)_78%,rgba(0,0,0,0.70)_100%)]" />
           </div>
 
-          <div className="absolute top-5 right-5 z-20 flex items-center gap-3">
+          <div className="absolute top-3 right-3 sm:top-5 sm:right-5 z-20 flex items-center gap-3">
             <div className="px-3 py-2 rounded-xl bg-bg-panel/70 border border-white/[0.08] backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
               <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-text-faint">Progress</span>
               <div className="mt-0.5 flex items-end gap-1">

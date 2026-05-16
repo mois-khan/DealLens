@@ -43,6 +43,7 @@ export default function ReportPage({ report, reportId, filename, onNavigate }) {
   const [inviting, setInviting] = useState(false);
   const [inviteSent, setInviteSent] = useState(false);
   const [inviteError, setInviteError] = useState(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   
   // Array of section IDs that match the <section id="..."> tags
   const sectionIds = ['scorecard', 'founder', 'claims', 'competitors', 'questions'];
@@ -75,34 +76,121 @@ export default function ReportPage({ report, reportId, filename, onNavigate }) {
   };
 
   return (
-    <div className="min-h-screen bg-bg-base flex">
+    <div className="min-h-screen bg-bg-base flex flex-col md:flex-row">
       <Sidebar active={activeSection} onNavigate={onNavigate} filename={filename} />
-      
-      <main className="ml-56 flex-1 px-8 py-8 h-screen overflow-y-auto relative">
-        <div className="absolute top-24 right-20 w-[360px] h-[360px] bg-accent/10 blur-[130px] rounded-full pointer-events-none" />
-        <div className="max-w-4xl mx-auto space-y-10 pb-32 relative z-10">
+
+      {/* Mobile drawer */}
+      <div className={`md:hidden fixed inset-0 z-40 ${mobileNavOpen ? '' : 'pointer-events-none'}`}>
+        <div
+          className={`absolute inset-0 bg-black/60 transition-opacity ${mobileNavOpen ? 'opacity-100' : 'opacity-0'}`}
+          onClick={() => setMobileNavOpen(false)}
+        />
+        <div
+          className={`absolute left-0 top-0 h-full w-[78vw] max-w-[320px] glass-panel border-r border-white/5 transition-transform duration-200 ${
+            mobileNavOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between">
+            <div className="text-base font-sans font-semibold text-text-primary">Deal<span className="text-accent-light">Lens</span></div>
+            <button
+              onClick={() => setMobileNavOpen(false)}
+              className="text-text-faint hover:text-text-primary transition-colors"
+              aria-label="Close navigation"
+            >
+              ✕
+            </button>
+          </div>
+          <nav className="px-3 py-4 space-y-1">
+            {sectionIds.map((id, index) => (
+              <button
+                key={id}
+                onClick={() => {
+                  onNavigate(id);
+                  setMobileNavOpen(false);
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${
+                  activeSection === id
+                    ? 'bg-bg-raised text-text-primary border-l-2 border-accent-light'
+                    : 'text-text-muted hover:bg-bg-raised hover:text-text-secondary border-l-2 border-transparent'
+                }`}
+              >
+                <span className="text-[10px] font-mono text-text-faint w-4">{String(index + 1).padStart(2, '0')}</span>
+                <span className="text-sm font-sans font-medium capitalize">{id}</span>
+              </button>
+            ))}
+          </nav>
+          <div className="px-5 py-4 border-t border-white/5">
+            <p className="text-xs font-mono text-text-faint truncate">{filename}</p>
+            <p className="text-[10px] font-mono text-text-faint mt-0.5">Analysed just now</p>
+          </div>
+        </div>
+      </div>
+
+      <main className="ml-0 md:ml-56 flex-1 px-4 sm:px-6 md:px-8 py-6 md:py-8 min-h-screen md:h-screen overflow-y-auto relative">
+        <div className="absolute top-16 right-6 sm:top-24 sm:right-20 w-[220px] h-[220px] sm:w-[360px] sm:h-[360px] bg-accent/10 blur-[110px] sm:blur-[130px] rounded-full pointer-events-none" />
+
+        {/* Mobile header + section nav */}
+        <div className="md:hidden sticky top-0 z-30 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 bg-bg-base/90 backdrop-blur border-b border-white/5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="text-sm font-sans font-semibold text-text-primary">Deal<span className="text-accent-light">Lens</span></div>
+              <div className="text-[10px] font-mono text-text-faint truncate max-w-[70vw]">{filename}</div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setMobileNavOpen(true)}
+                className="text-[10px] font-mono uppercase tracking-widest text-text-faint border border-white/10 px-3 py-1.5 rounded-lg"
+              >
+                Menu
+              </button>
+              <button
+                onClick={handleExportPDF}
+                className="text-[10px] font-mono uppercase tracking-widest text-accent-light border border-accent/30 px-3 py-1.5 rounded-lg"
+              >
+                Export
+              </button>
+            </div>
+          </div>
+          <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1 custom-scroll">
+            {sectionIds.map((id) => (
+              <button
+                key={id}
+                onClick={() => onNavigate(id)}
+                className={`px-3 py-1.5 rounded-full text-[10px] font-mono uppercase tracking-widest border whitespace-nowrap transition-colors ${
+                  activeSection === id
+                    ? 'bg-accent/15 text-accent-light border-accent/40'
+                    : 'bg-bg-raised text-text-faint border-white/10'
+                }`}
+              >
+                {id}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="max-w-4xl mx-auto space-y-8 sm:space-y-10 pb-24 sm:pb-32 relative z-10">
           
           {/* Header */}
-          <div className="flex items-start justify-between border border-white/[0.08] bg-bg-panel/45 backdrop-blur-md rounded-2xl px-6 py-6 shadow-card">
+          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between border border-white/[0.08] bg-bg-panel/45 backdrop-blur-md rounded-2xl px-4 sm:px-6 py-5 sm:py-6 shadow-card">
             <div className="space-y-3">
-              <div className="flex items-center gap-4">
-                <h1 className="text-3xl font-sans font-semibold tracking-tight text-text-primary">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                <h1 className="text-2xl sm:text-3xl font-sans font-semibold tracking-tight text-text-primary">
                   {report.scorecard?.startup_name || "Unknown Startup"}
                 </h1>
-                <span className="px-2.5 py-1 rounded bg-accent/10 border border-accent/20 text-[10px] font-mono text-accent-light uppercase tracking-widest">
+                <span className="w-fit px-2.5 py-1 rounded bg-accent/10 border border-accent/20 text-[10px] font-mono text-accent-light uppercase tracking-widest">
                   Intelligence Report
                 </span>
               </div>
-              <div className="flex items-center gap-3">
-                <p className="text-[11px] font-mono text-text-faint tracking-wide">{filename}</p>
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="text-[11px] font-mono text-text-faint tracking-wide truncate max-w-[80vw] sm:max-w-none">{filename}</p>
                 <span className="text-text-faint/30 text-[10px]">|</span>
                 <p className="text-[10px] font-mono text-text-faint uppercase tracking-wider">Analysed just now</p>
               </div>
             </div>
-            
-            <div className="flex items-center gap-8">
+
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
               {/* Overall Score Badge */}
-              <div className="flex flex-col items-end">
+              <div className="flex flex-col sm:items-end">
                 <p className="text-[10px] font-mono text-text-muted uppercase tracking-widest mb-1">Overall Verdict</p>
                 <div className="flex items-center gap-3">
                   <div className={`text-4xl font-mono font-semibold tracking-tighter ${
@@ -115,10 +203,10 @@ export default function ReportPage({ report, reportId, filename, onNavigate }) {
                 </div>
               </div>
 
-              <div className="w-px h-12 bg-white/10" />
+              <div className="hidden sm:block w-px h-12 bg-white/10" />
 
               {/* Actions */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 w-full sm:w-auto">
                 <Button
                   variant="primary"
                   onClick={handleMeetingInvite}

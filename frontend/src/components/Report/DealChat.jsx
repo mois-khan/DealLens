@@ -58,7 +58,7 @@ export default function DealChat({ rawText }) {
       {/* Floating Action Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-accent hover:bg-accent-light text-white shadow-[0_0_20px_rgba(113,112,255,0.4)] flex items-center justify-center transition-all z-50 hover:scale-105 active:scale-95"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-accent hover:bg-accent-light text-white shadow-[0_0_20px_rgba(113,112,255,0.4)] flex items-center justify-center transition-all z-50 hover:scale-105 active:scale-95"
       >
         {isOpen ? (
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -73,7 +73,7 @@ export default function DealChat({ rawText }) {
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[600px] max-h-[80vh] bg-bg-panel/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden animate-fadeIn">
+        <div className="fixed bottom-20 right-3 sm:bottom-24 sm:right-6 w-[92vw] sm:w-96 h-[70vh] sm:h-[600px] max-h-[80vh] bg-bg-panel/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden animate-fadeIn">
           {/* Header */}
           <div className="px-5 py-4 border-b border-white/10 bg-bg-surface/50 flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center">

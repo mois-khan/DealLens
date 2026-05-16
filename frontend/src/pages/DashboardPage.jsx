@@ -247,6 +247,7 @@ export default function DashboardPage() {
   const [activeView, setActiveView] = useState('inbox');
   const [loading, setLoading] = useState(true);
   const [showPrefs, setShowPrefs] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [analyzing, setAnalyzing] = useState(null);
 
   const fetchDeals = useCallback(async () => {
@@ -327,9 +328,9 @@ export default function DashboardPage() {
   }).sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // New to old
 
   return (
-    <div className="h-screen bg-bg-base flex overflow-hidden font-sans">
+    <div className="min-h-screen lg:h-screen bg-bg-base flex flex-col lg:flex-row overflow-hidden font-sans">
       {/* ── Sidebar ── */}
-      <aside className="w-[260px] glass-sidebar flex flex-col shrink-0 relative z-20 animate-slideInLeft">
+      <aside className="hidden lg:flex w-[260px] glass-sidebar flex-col shrink-0 relative z-20 animate-slideInLeft">
         {/* Brand */}
         <div className="px-6 py-8 border-b border-white/5">
           <div className="flex items-center gap-3">
@@ -416,13 +417,145 @@ export default function DashboardPage() {
         </div>
       </aside>
 
+      {/* Mobile drawer */}
+      <div className={`lg:hidden fixed inset-0 z-40 ${mobileNavOpen ? '' : 'pointer-events-none'}`}>
+        <div
+          className={`absolute inset-0 bg-black/60 transition-opacity ${mobileNavOpen ? 'opacity-100' : 'opacity-0'}`}
+          onClick={() => setMobileNavOpen(false)}
+        />
+        <div
+          className={`absolute left-0 top-0 h-full w-[78vw] max-w-[320px] glass-panel border-r border-white/5 transition-transform duration-200 ${
+            mobileNavOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <div className="px-6 py-6 border-b border-white/5 flex items-center justify-between">
+            <div>
+              <div className="text-lg font-sans font-bold text-text-primary">Deal<span className="text-accent-light">Lens</span></div>
+              <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider mt-1.5">Investor CRM</p>
+            </div>
+            <button
+              onClick={() => setMobileNavOpen(false)}
+              className="text-text-faint hover:text-text-primary transition-colors"
+              aria-label="Close navigation"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto custom-scroll py-6 px-4">
+            <div className="text-xs font-sans font-semibold text-text-faint uppercase tracking-wider mb-3 px-2">
+              Pipeline
+            </div>
+            <nav className="space-y-1">
+              <button
+                onClick={() => {
+                  setActiveView('all');
+                  setMobileNavOpen(false);
+                }}
+                className={`nav-item ${activeView === 'all' ? 'active' : ''}`}
+              >
+                <Icon name="BarChart3" className="w-5 h-5 shrink-0" />
+                <span className="flex-1">Total Submissions</span>
+                <span className={`text-xs font-mono font-bold ${activeView === 'all' ? 'text-accent-light' : 'text-text-faint'}`}>
+                  {stats.total}
+                </span>
+              </button>
+
+              {SIDEBAR_VIEWS.map((view) => (
+                <button
+                  key={view.key}
+                  onClick={() => {
+                    setActiveView(view.key);
+                    setMobileNavOpen(false);
+                  }}
+                  className={`nav-item ${activeView === view.key ? 'active' : ''}`}
+                >
+                  <Icon name={view.icon} className="w-5 h-5 shrink-0" />
+                  <span className="flex-1">{view.label}</span>
+                  <span className={`text-xs font-mono font-bold ${
+                    activeView === view.key ? 'text-accent-light' : 'text-text-faint'
+                  }`}>
+                    {stats[view.key] || 0}
+                  </span>
+                </button>
+              ))}
+            </nav>
+
+            <div className="mt-8 mb-3 px-2 flex items-center justify-between">
+              <div className="text-xs font-sans font-semibold text-text-faint uppercase tracking-wider">
+                Tools
+              </div>
+            </div>
+            <nav className="space-y-1">
+              <button
+                onClick={() => {
+                  navigate('/submit');
+                  setMobileNavOpen(false);
+                }}
+                className="nav-item"
+              >
+                <Icon name="Link" className="w-5 h-5 shrink-0" />
+                <span>Public Submission Link</span>
+              </button>
+              <button
+                onClick={() => {
+                  navigate('/');
+                  setMobileNavOpen(false);
+                }}
+                className="nav-item"
+              >
+                <Icon name="Upload" className="w-5 h-5 shrink-0" />
+                <span>Manual Deck Upload</span>
+              </button>
+              <button
+                onClick={() => {
+                  setShowPrefs(true);
+                  setMobileNavOpen(false);
+                }}
+                className="nav-item"
+              >
+                <Icon name="Settings" className="w-5 h-5 shrink-0" />
+                <span>Preferences</span>
+              </button>
+            </nav>
+          </div>
+        </div>
+      </div>
+
       {/* ── Main Content ── */}
       <main className="flex-1 flex flex-col min-w-0 relative z-10 bg-[url('/grid.svg')] bg-center bg-fixed">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-bg-base pointer-events-none" />
         
         {/* Top Header / Stats Row */}
-        <header className="px-8 pt-8 pb-6 border-b border-border-subtle bg-bg-panel/40 backdrop-blur-md sticky top-0 z-20">
-          <div className="flex items-center justify-between mb-6">
+        <header className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-6 lg:pt-8 pb-4 sm:pb-5 lg:pb-6 border-b border-border-subtle bg-bg-panel/40 backdrop-blur-md sticky top-0 z-20">
+          <div className="lg:hidden flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-lg font-sans font-bold text-text-primary">Deal<span className="text-accent-light">Lens</span></h1>
+              <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Investor CRM</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setMobileNavOpen(true)}
+                className="px-3 py-2 rounded-lg border border-white/10 text-[10px] font-mono uppercase tracking-widest text-text-faint"
+              >
+                Menu
+              </button>
+              <button
+                onClick={() => setShowPrefs(true)}
+                className="px-3 py-2 rounded-lg border border-white/10 text-[10px] font-mono uppercase tracking-widest text-text-faint"
+              >
+                Preferences
+              </button>
+              <button
+                onClick={() => navigate('/submit')}
+                className="px-3 py-2 rounded-lg bg-accent text-white text-[10px] font-mono uppercase tracking-widest"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
             <div>
               <h2 className="text-2xl font-bold text-text-primary flex items-center gap-3">
                 <Icon name={activeView === 'all' ? 'BarChart3' : SIDEBAR_VIEWS.find(v => v.key === activeView)?.icon || 'BarChart3'} className="w-6 h-6 text-accent-light" />
@@ -451,7 +584,7 @@ export default function DashboardPage() {
         </header>
 
         {/* Deal Grid */}
-        <div className="flex-1 overflow-y-auto custom-scroll p-8 relative z-10">
+        <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 relative z-10">
           {loading ? (
             <div className="flex flex-col items-center justify-center h-full text-text-muted">
               <Icon name="Loader2" className="w-8 h-8 animate-spin text-accent-light mb-4" />

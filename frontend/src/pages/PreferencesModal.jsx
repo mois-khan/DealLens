@@ -64,7 +64,7 @@ export default function PreferencesModal({ isOpen, onClose, onSaved }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="bg-bg-surface border border-border-standard rounded-2xl w-full max-w-lg mx-4 shadow-2xl animate-fadeIn"
+        className="bg-bg-surface border border-border-standard rounded-2xl w-[92vw] sm:w-full max-w-lg mx-4 shadow-2xl animate-fadeIn"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -81,7 +81,7 @@ export default function PreferencesModal({ isOpen, onClose, onSaved }) {
         </div>
 
         {/* Body */}
-        <div className="px-6 py-5 max-h-[400px] overflow-y-auto">
+        <div className="px-6 py-5 max-h-[70vh] sm:max-h-[400px] overflow-y-auto">
           {loading ? (
             <div className="text-center text-text-muted font-mono text-sm py-8">Loading preferences...</div>
           ) : (
