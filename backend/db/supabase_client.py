@@ -2,6 +2,7 @@ import os
 import logging
 import asyncio
 from typing import Optional
+import uuid
 from uuid import UUID
 from supabase import create_async_client, AsyncClient
 
@@ -54,26 +55,29 @@ async def save_report(report: dict) -> str:
         logger.error(f"[supabase] Failed to save report: {e}")
         raise
 
-async def save_submission(data: dict) -> str:
+async def save_submission(data: dict, user_id: Optional[str] = None) -> str:
     try:
         sb = await get_supabase()
-        response = await sb.table("analyses").insert({
+        insert_data = {
             "startup_name": data.get("startup_name", "Unknown"),
             "file_name": data.get("file_name", "unknown.pdf"),
             "report": data.get("report", {}),
-            "overall_score": None,
+            "overall_score": data.get("overall_score"),
             "status": data.get("status", "pending"),
             "category": data.get("category"),
             "short_description": data.get("short_description"),
             "founder_email": data.get("founder_email"),
             "raw_text": data.get("raw_text"),
-        }).execute()
+        }
+        report_id = str(uuid.uuid4())
+        insert_data["id"] = report_id
+
+        if user_id:
+            insert_data["user_id"] = user_id
+
+        await sb.table("analyses").insert(insert_data, returning="minimal").execute()
         
-        if not response.data or len(response.data) == 0:
-            raise ValueError("Supabase insert succeeded but returned no data.")
-        
-        report_id = response.data[0]["id"]
-        logger.info(f"[supabase] Submission saved successfully: {report_id}")
+        logger.info(f"[supabase] Submission saved successfully: {report_id} (owner: {user_id})")
         return report_id
     except Exception as e:
         logger.error(f"[supabase] Failed to save submission: {e}")
@@ -106,15 +110,15 @@ async def get_full_record(report_id: str) -> Optional[dict]:
         logger.error(f"[supabase] Failed to fetch full record {report_id}: {e}")
         return None
 
-async def get_all_deals() -> list[dict]:
+async def get_all_deals(user_id: str) -> list[dict]:
     try:
         sb = await get_supabase()
         response = await sb.table("analyses").select(
             "id, created_at, startup_name, file_name, overall_score, status, category, short_description, founder_email"
-        ).order("created_at", desc=True).execute()
+        ).eq("user_id", user_id).order("created_at", desc=True).execute()
         return response.data or []
     except Exception as e:
-        logger.error(f"[supabase] Failed to fetch deals: {e}")
+        logger.error(f"[supabase] Failed to fetch deals for {user_id}: {e}")
         return []
 
 async def update_report_status(report_id: str, status: str) -> bool:
@@ -139,35 +143,31 @@ async def update_report_data(report_id: str, updates: dict) -> bool:
         logger.error(f"[supabase] Failed to update report data: {e}")
         return False
 
-async def get_preferences() -> dict:
+async def get_preferences(user_id: str) -> dict:
     try:
         sb = await get_supabase()
-        response = await sb.table("investor_preferences").select("*").limit(1).execute()
+        response = await sb.table("investor_preferences").select("*").eq("user_id", user_id).limit(1).execute()
         if response.data and len(response.data) > 0:
             return response.data[0]
         return {"interested_categories": [], "disqualified_categories": []}
     except Exception as e:
-        logger.error(f"[supabase] Failed to fetch preferences: {e}")
+        logger.error(f"[supabase] Failed to fetch preferences for {user_id}: {e}")
         return {"interested_categories": [], "disqualified_categories": []}
 
-async def save_preferences(interested: list[str], disqualified: list[str]) -> dict:
+async def save_preferences(user_id: str, interested: list[str], disqualified: list[str]) -> dict:
     try:
         sb = await get_supabase()
-        existing = await get_preferences()
-        
         data = {
+            "user_id": user_id,
             "interested_categories": interested,
             "disqualified_categories": disqualified,
         }
         
-        if existing and existing.get("id"):
-            response = await sb.table("investor_preferences").update(data).eq("id", existing["id"]).execute()
-        else:
-            response = await sb.table("investor_preferences").insert(data).execute()
-        
+        # Upsert logic
+        response = await sb.table("investor_preferences").upsert(data, on_conflict="user_id").execute()
         return response.data[0] if response.data else {}
     except Exception as e:
-        logger.error(f"[supabase] Failed to save preferences: {e}")
+        logger.error(f"[supabase] Failed to save preferences for {user_id}: {e}")
         raise
 
 async def delete_report(report_id: str) -> bool:
@@ -180,3 +180,38 @@ async def delete_report(report_id: str) -> bool:
     except Exception as e:
         logger.error(f"[supabase] Failed to delete report {report_id}: {e}")
         return False
+
+
+# ── Profile Operations ────────────────────────────────────────────────────────
+
+async def get_profile_by_id(user_id: str) -> Optional[dict]:
+    try:
+        sb = await get_supabase()
+        response = await sb.table("profiles").select("*").eq("id", user_id).execute()
+        return response.data[0] if response.data else None
+    except Exception as e:
+        logger.error(f"[supabase] Failed to fetch profile {user_id}: {e}")
+        return None
+
+async def get_profile_by_handle(handle: str) -> Optional[dict]:
+    try:
+        sb = await get_supabase()
+        response = await sb.table("profiles").select("*").eq("handle", handle.lower()).execute()
+        return response.data[0] if response.data else None
+    except Exception as e:
+        logger.error(f"[supabase] Failed to fetch profile by handle {handle}: {e}")
+        return None
+
+async def create_profile(user_id: str, full_name: str, handle: str, email: str) -> dict:
+    try:
+        sb = await get_supabase()
+        response = await sb.table("profiles").insert({
+            "id": user_id,
+            "full_name": full_name,
+            "handle": handle.lower(),
+            "email": email
+        }).execute()
+        return response.data[0] if response.data else {}
+    except Exception as e:
+        logger.error(f"[supabase] Failed to create profile for {user_id}: {e}")
+        raise

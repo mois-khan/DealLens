@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const STEPS = [
   { id: 1, label: 'Extracting claims from deck', short: 'Extract' },
@@ -271,12 +272,16 @@ function loadingReducer(state, action) {
 }
 
 export default function LoadingPage({ currentStep }) {
+  const location = useLocation();
   const prefersReducedMotion = usePrefersReducedMotion();
   const viewportRef = useRef(null);
 
   const [viewport, setViewport] = useState({ w: 0, h: 0 });
   const [insightIndex, setInsightIndex] = useState(0);
   const [machine, dispatch] = useReducer(loadingReducer, INITIAL_MACHINE);
+
+  const isPublicSuccess = location.state?.submitted;
+  const investorName = location.state?.investorName || "the investor";
 
   const externalStep = clamp(Number(currentStep || 1), 1, TOTAL_STEPS);
   const cardVisible = machine.phase === 'card_open';
@@ -461,6 +466,32 @@ export default function LoadingPage({ currentStep }) {
 
     return () => clearTimeout(timer);
   }, [machine, prefersReducedMotion]);
+
+  if (isPublicSuccess) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden bg-bg-base">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-verdict-green-bg/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <div className="w-20 h-20 bg-verdict-green-bg/20 rounded-full flex items-center justify-center mb-6 border border-verdict-green-border">
+            <svg className="w-10 h-10 text-verdict-green-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h2 className="text-3xl font-sans font-bold text-white tracking-tight mb-3">Deck Submitted</h2>
+          <p className="text-text-secondary text-base max-w-md mb-8">
+            Your pitch deck has been successfully sent to <span className="text-white font-medium">{investorName}</span>. 
+            It is now being automatically processed by the DealLens AI pipeline.
+          </p>
+          <div className="flex items-center gap-6">
+            <span className="text-[10px] font-mono text-text-faint uppercase tracking-widest flex items-center gap-2">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+              Securely Delivered
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden bg-bg-base">

@@ -64,8 +64,8 @@ export default function ReportPage({ report, reportId, filename, onNavigate }) {
     setInviting(true);
     setInviteError(null);
     try {
-      const { sendMeetingInvite } = await import('../api/dashboard');
-      await sendMeetingInvite(reportId);
+      const { sendInvite } = await import('../api/analyse');
+      await sendInvite(reportId);
       setInviteSent(true);
     } catch (err) {
       setInviteError(err.response?.data?.detail || 'Failed to send invite.');
@@ -139,21 +139,21 @@ export default function ReportPage({ report, reportId, filename, onNavigate }) {
           {/* 01: Deal Scorecard */}
           <section id="scorecard" className="scroll-mt-8">
             <ErrorBoundary eyebrow="01" title="Deal Scorecard">
-              <Section1Scorecard scorecard={report.scorecard} />
+              <Section1Scorecard scorecard={report?.scorecard || {}} />
             </ErrorBoundary>
           </section>
 
           {/* 02: Founder Card */}
           <section id="founder" className="scroll-mt-8">
             <ErrorBoundary eyebrow="02" title="Founder Intelligence">
-              <Section2Founder founder={report.founder} />
+              <Section2Founder founder={report?.founder || {}} />
             </ErrorBoundary>
           </section>
 
           {/* 03: Claim Verification */}
           <section id="claims" className="scroll-mt-8">
             <ErrorBoundary eyebrow="03" title="Claim Verification">
-              <Section3Claims claims={report.claims} />
+              <Section3Claims claims={report?.claims || {}} />
             </ErrorBoundary>
           </section>
 
@@ -161,8 +161,8 @@ export default function ReportPage({ report, reportId, filename, onNavigate }) {
           <section id="competitors" className="scroll-mt-8">
             <ErrorBoundary eyebrow="04" title="Competitor Map">
               <Section4Competitors
-                competitors={report.competitors}
-                moat={report.claims.moat}
+                competitors={report?.competitors || []}
+                moat={report?.claims?.moat}
                 startupName={report?.scorecard?.startup_name}
               />
             </ErrorBoundary>
@@ -171,7 +171,7 @@ export default function ReportPage({ report, reportId, filename, onNavigate }) {
           {/* 05: Investor Questions */}
           <section id="questions" className="scroll-mt-8">
             <ErrorBoundary eyebrow="05" title="Investor Questions">
-              <Section5Questions questions={report.questions} />
+              <Section5Questions questions={report?.questions || []} />
             </ErrorBoundary>
           </section>
 

@@ -178,7 +178,8 @@ def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
             last_err_str = err_str
             is_rate_limit = "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower()
             is_unavailable = "503" in err_str or "UNAVAILABLE" in err_str
-            is_retryable = is_rate_limit or is_unavailable or "403" in err_str or "PERMISSION_DENIED" in err_str
+            is_connection_error = "10054" in err_str or "connection" in err_str.lower() or "timeout" in err_str.lower() or "104" in err_str
+            is_retryable = is_rate_limit or is_unavailable or is_connection_error or "403" in err_str or "PERMISSION_DENIED" in err_str
 
             if not is_retryable:
                 # Non-retryable error (bad prompt, auth error, etc.) — fail fast
@@ -255,12 +256,38 @@ async def call_gemini(
 
 
 def parse_json(text: str) -> dict:
-    """Defensively strips markdown and parses JSON."""
+    """Defensively strips markdown and parses JSON, ignoring trailing text."""
+    import re
     original = text
     text = text.strip()
-    if text.startswith("```"):
-        lines = text.split("\n")
-        text = "\n".join(lines[1:-1]).strip()
+    
+    # Try to extract content inside ```json ... ``` blocks
+    match = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', text)
+    if match:
+        text = match.group(1).strip()
+    else:
+        # Fallback: extract the largest JSON-like block (from first {/[ to last }/])
+        start_dict = text.find('{')
+        start_list = text.find('[')
+        
+        start_idx = -1
+        if start_dict != -1 and start_list != -1:
+            start_idx = min(start_dict, start_list)
+        else:
+            start_idx = max(start_dict, start_list)
+            
+        end_dict = text.rfind('}')
+        end_list = text.rfind(']')
+        
+        end_idx = -1
+        if end_dict != -1 and end_list != -1:
+            end_idx = max(end_dict, end_list)
+        else:
+            end_idx = max(end_dict, end_list)
+            
+        if start_idx != -1 and end_idx != -1 and end_idx >= start_idx:
+            text = text[start_idx:end_idx+1]
+
     try:
         parsed = json.loads(text)
         # Defensive check: if Gemini returns a list instead of a dict, take the first item

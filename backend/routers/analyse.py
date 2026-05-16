@@ -2,13 +2,13 @@ import asyncio
 import logging
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
-
 from db.supabase_client import (
     get_report, save_report, save_submission,
     get_full_record, update_report_data,
-    get_preferences,
+    get_preferences, get_profile_by_handle
 )
+from auth_utils import get_current_user
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile, Header, Depends
 from services.apollo_client import search_apollo
 from services.crunchbase_client import get_person
 from services.serper_client import search_serper
@@ -25,7 +25,21 @@ MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024
 # ── POST /analyse ──────────────────────────────────────────────────────────────
 
 @router.post("/analyse")
-async def analyse_deck(file: Annotated[UploadFile, File(description="Pitch deck PDF, max 20MB")]):
+async def analyse_deck(
+    file: Annotated[UploadFile, File(description="Pitch deck PDF, max 20MB")],
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Accepts a PDF pitch deck and runs the full DealLens analysis pipeline.
+    """
+    user_id = None
+    if authorization:
+        try:
+            from auth_utils import get_current_user
+            user = await get_current_user(authorization)
+            user_id = user.id
+        except:
+            pass
     """
     Accepts a PDF pitch deck and runs the full DealLens analysis pipeline.
 
@@ -198,8 +212,18 @@ async def analyse_deck(file: Annotated[UploadFile, File(description="Pitch deck 
     }
 
     # Save to Supabase
-    logger.info("[analyse] 💾 Persisting report to Supabase...")
-    report_id = await save_report(report_data)
+    logger.info(f"[analyse] 💾 Persisting report to Supabase (user: {user_id})...")
+    submission_data = {
+        "startup_name": scorecard.get("startup_name", "Unknown"),
+        "file_name": filename,
+        "report": report_data,
+        "overall_score": scorecard.get("overall", 0.0),
+        "status": "inbox",
+        "category": claims.get("category", "Unknown"),
+        "short_description": claims.get("short_description", ""),
+        "raw_text": raw_text
+    }
+    report_id = await save_submission(submission_data, user_id=user_id)
     report_data["report_id"] = report_id
 
     logger.info(f"[analyse] Analysis complete for {filename}. Report ID: {report_id}")
@@ -208,7 +232,14 @@ async def analyse_deck(file: Annotated[UploadFile, File(description="Pitch deck 
 
 # ── Background Tasks ─────────────────────────────────────────────────────────
 
-async def process_triage_and_email(pdf_bytes: bytes, filename: str, founder_email: str, startup_name_input: str, report_id: str):
+async def process_triage_and_email(
+    pdf_bytes: bytes, 
+    filename: str, 
+    founder_email: str, 
+    startup_name_input: str, 
+    report_id: str,
+    user_id: Optional[str] = None
+):
     try:
         from pipeline.extractor import extract_text
         from pipeline.claim_parser import extract_claims
@@ -226,7 +257,7 @@ async def process_triage_and_email(pdf_bytes: bytes, filename: str, founder_emai
         ai_startup_name = claims.get("startup_name", "Unknown")
         final_startup_name = startup_name_input if startup_name_input else ai_startup_name
 
-        prefs = await get_preferences()
+        prefs = await get_preferences(user_id) if user_id else {"interested_categories": [], "disqualified_categories": []}
         interested_cats = [c.lower() for c in prefs.get("interested_categories", [])]
         disqualified_cats = [c.lower() for c in prefs.get("disqualified_categories", [])]
         
@@ -262,59 +293,75 @@ from fastapi import BackgroundTasks
 async def submit_deck(
     background_tasks: BackgroundTasks,
     file: Annotated[UploadFile, File(description="Pitch deck PDF, max 20MB")],
+    target_handle: str = Form(...),
     founder_email: str = Form(""),
     startup_name_input: str = Form(""),
 ):
     """
     Zero-wait endpoint for the public founder submission form.
-    Returns immediately while extraction, triage, and email run in the background.
+    Routes the deck to the investor specified by target_handle.
     """
-    filename = file.filename or ""
-    if not filename.lower().endswith(".pdf"):
-        raise HTTPException(status_code=422, detail="File must be a PDF.")
+    try:
+        logger.info(f"[submit] Received submission for handle: {target_handle}")
+        
+        # 1. Resolve handle to user_id
+        investor_profile = await get_profile_by_handle(target_handle)
+        if not investor_profile:
+            logger.warning(f"[submit] Handle '{target_handle}' not found in database.")
+            raise HTTPException(status_code=404, detail=f"Investor handle '{target_handle}' not found.")
+        
+        user_id = investor_profile["id"]
+        logger.info(f"[submit] Resolved handle to user_id: {user_id}")
+        filename = file.filename or ""
+        if not filename.lower().endswith(".pdf"):
+            raise HTTPException(status_code=422, detail="File must be a PDF.")
 
-    pdf_bytes = await file.read()
-    if len(pdf_bytes) > MAX_FILE_SIZE_BYTES:
-        raise HTTPException(status_code=422, detail=f"File exceeds 20MB limit.")
-    if len(pdf_bytes) == 0:
-        raise HTTPException(status_code=422, detail="Uploaded file is empty.")
+        pdf_bytes = await file.read()
+        if len(pdf_bytes) > MAX_FILE_SIZE_BYTES:
+            raise HTTPException(status_code=422, detail=f"File exceeds 20MB limit.")
+        if len(pdf_bytes) == 0:
+            raise HTTPException(status_code=422, detail="Uploaded file is empty.")
 
-    # Save initial pending stub immediately
-    submission_data = {
-        "startup_name": startup_name_input or "Processing...",
-        "file_name": filename,
-        "report": {"claims": {}},
-        "status": "pending",
-        "category": "Processing...",
-        "short_description": "We are extracting details from your deck.",
-        "founder_email": founder_email,
-        "raw_text": "",
-    }
+        # Save initial pending stub immediately
+        submission_data = {
+            "startup_name": startup_name_input or "Processing...",
+            "file_name": filename,
+            "report": {"claims": {}},
+            "status": "pending",
+            "category": "Processing...",
+            "short_description": "We are extracting details from your deck.",
+            "founder_email": founder_email,
+            "raw_text": "",
+        }
+        
+        report_id = await save_submission(submission_data, user_id=user_id)
+        
+        background_tasks.add_task(
+            process_triage_and_email,
+            pdf_bytes,
+            filename,
+            founder_email,
+            startup_name_input,
+            report_id,
+            user_id
+        )
     
-    report_id = await save_submission(submission_data)
-    
-    background_tasks.add_task(
-        process_triage_and_email,
-        pdf_bytes,
-        filename,
-        founder_email,
-        startup_name_input,
-        report_id
-    )
-    
-    logger.info(f"[submit] Zero-wait submission accepted. ID: {report_id}. Processing in background.")
-    return {
-        "success": True,
-        "report_id": report_id,
-        "startup_name": startup_name_input or "Your Startup",
-        "status": "pending",
-    }
+        logger.info(f"[submit] Zero-wait submission accepted. ID: {report_id}. Processing in background.")
+        return {
+            "success": True,
+            "report_id": report_id,
+            "startup_name": startup_name_input or "Your Startup",
+            "status": "pending",
+        }
+    except Exception as e:
+        logger.error(f"[submit] CRITICAL ERROR during deck submission: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # ── POST /analyse-full/{report_id} (Deep Dive from Dashboard) ─────────────────
 
 @router.post("/analyse-full/{report_id}")
-async def analyse_full(report_id: str):
+async def analyse_full(report_id: str, user = Depends(get_current_user)):
     """
     Runs the full deep-dive analysis on a previously submitted deck.
     Triggered when the investor clicks 'Detailed Report' on the dashboard.
@@ -456,11 +503,15 @@ async def analyse_full(report_id: str):
         "raw_text": raw_text,
     }
 
-    await update_report_data(report_id, {
+    success = await update_report_data(report_id, {
         "report": report_data,
         "overall_score": scorecard.get("overall", 0),
         "status": "inbox",
     })
+
+    if not success:
+        logger.error(f"[analyse-full] Failed to save deep dive data to database for report {report_id}.")
+        raise HTTPException(status_code=500, detail="Failed to save analysis to database. Check database permissions.")
 
     logger.info(f"[analyse-full] Full analysis complete for report {report_id}")
     return report_data

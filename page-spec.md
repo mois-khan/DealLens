@@ -52,92 +52,69 @@ Upload drag zone changes colour on dragover without delay.
 
 ---
 
-## Page 1 — Upload Page
+## Page 1 — Landing Page (Marketing)
 
 **Route:** `/`
-**Purpose:** Investor lands here, uploads a pitch deck PDF, triggers analysis.
-**Layout:** Full screen centred — no sidebar, no nav.
-**Shell component:** `<UploadPage />` from `design.md` section 6.8
-
-### Elements
-
-```
-┌─────────────────────────────────────────────────────┐
-│                                                     │
-│                    [LOGO]                           │
-│                   DealLens                          │
-│         AI-powered due diligence in 10 min          │
-│                                                     │
-│         ┌─────────────────────────────┐             │
-│         │                             │             │
-│         │   📄  Drop pitch deck here  │             │
-│         │   PDF only · Max 20MB       │             │
-│         │                             │             │
-│         │      [Browse file btn]      │             │
-│         │                             │             │
-│         └─────────────────────────────┘             │
-│                                                     │
-│         [3 trust signals below drop zone]           │
-│                                                     │
-└─────────────────────────────────────────────────────┘
-```
-
-### Element Spec
-
-| Element | Component | Tailwind classes | Notes |
-|---|---|---|---|
-| Page background | `div` | `min-h-screen bg-bg-base flex flex-col items-center justify-center px-6` | |
-| Logo wordmark | `h1` | `text-3xl font-sans font-semibold text-text-primary` | "Deal" + `<span className="text-accent-light">Lens</span>` |
-| Tagline | `p` | `text-sm font-sans text-text-muted mt-2 mb-12` | "AI-powered due diligence in under 10 minutes" |
-| Drop zone (idle) | `div` | `w-full max-w-lg rounded-2xl border-2 border-dashed border-white/10 bg-bg-surface py-16 px-8 flex flex-col items-center gap-4 cursor-pointer transition-colors duration-150` | |
-| Drop zone (dragging) | same + | `border-accent bg-accent/5` replaces border/bg | Swap class on `dragover` |
-| Drop zone icon | `div` | `w-12 h-12 rounded-xl bg-bg-raised flex items-center justify-center text-2xl` | Emoji `📄` |
-| Drop zone label | `p` | `text-sm font-sans font-medium text-text-secondary` | "Drop your pitch deck here" |
-| Drop zone sublabel | `p` | `text-xs font-mono text-text-faint mt-1` | "PDF only · Max 20MB" |
-| Browse button | `label` wrapping `input[file]` | Primary button style from `design.md` 6.5 | `accept=".pdf"` on input |
-| Trust signals row | `div` | `flex items-center gap-6 mt-8` | 3 items below drop zone |
-| Trust signal item | `div` | `flex items-center gap-2 text-xs font-mono text-text-faint` | See trust signals below |
-
-### Trust Signals (3 items below drop zone)
-
-```
-🔒 Private · never stored    ⚡ Results in ~10 min    🎯 5 investor questions
-```
-
-Each: `flex items-center gap-1.5 text-xs font-mono text-text-faint`
-
-### States
-
-**Idle:** Drop zone with dashed border, all elements visible.
-
-**File selected (before upload):**
-- Drop zone shows file name: `text-sm font-mono text-text-primary`
-- File size: `text-xs font-mono text-text-faint`
-- Browse button changes to "Analyse Deck" primary button
-- Add remove `×` ghost button next to filename
-
-**Uploading (after click):**
-- Button shows spinner + "Uploading…" — disable pointer events
-- Drop zone border pulses: `animate-pulse border-accent/50`
-- Navigate to `/loading` immediately on upload success — do not wait for analysis
-
-**Error (wrong file type or too large):**
-- Drop zone border turns red: `border-verdict-red-bar`
-- Error message below drop zone: `text-xs font-mono text-verdict-red-text mt-3`
-- Message: "Only PDF files are supported" or "File exceeds 20MB limit"
-- Auto-clears after 3 seconds
-
-### Interactions
-
-- `dragover` → swap border + bg classes instantly (no delay)
-- `dragleave` → revert instantly
-- `drop` → show filename, show Analyse button
-- File input `change` → same as drop
-- Click Analyse → optimistically navigate to `/loading` while upload happens in background
+**Purpose:** Marketing entry point for investors.
+**Layout:** Hero section with "Sign Up" and "Login" CTAs.
+**Key Elements:**
+- Value proposition: "Automate your due diligence."
+- Primary CTA: "Get Started as an Investor" -> `/signup`.
+- Secondary CTA: "Login" -> `/login`.
 
 ---
 
-## Page 2 — Loading Page
+## Page 2 — Auth: Sign Up / Login
+
+**Routes:** `/signup`, `/login`
+**Purpose:** Onboard investors.
+**Layout:** Centered form card.
+**Signup Fields:**
+- Full Name
+- Email
+- Password
+**Login Fields:**
+- Email
+- Password
+
+---
+
+## Page 3 — Onboarding (Preferences)
+
+**Route:** `/onboarding`
+**Purpose:** Set investor's initial filter preferences.
+**Layout:** Step-by-step form or category selector.
+**Elements:**
+- "Select industries you are interested in."
+- "Select industries you want to automatically disqualify."
+- "Finish Setup" -> `/dashboard`.
+
+---
+
+## Page 4 — Investor Dashboard
+
+**Route:** `/dashboard`
+**Purpose:** Command center for inbound deals.
+**Layout:** Sidebar + Main view.
+**Elements:**
+- **Bio Link Header**: `deallens.ai/mois-khan` with Copy button.
+- **Triage Stat Cards**: Inbox (Pending), Favorites, Rejected.
+- **Deal Table**: Sortable list of all submitted decks.
+- **Search**: Filter by startup name.
+
+---
+
+## Page 5 — Public Submission (Bio Link)
+
+**Route:** `/:handle`
+**Purpose:** The link an investor puts in their bio for founders.
+**Layout:** Branded Upload Page.
+**Branding:** "Submit your deck to [Investor Name]".
+**Flow:** Upload -> `/loading` -> "Thank you! [Investor] will review your deck."
+
+---
+
+## Page 6 — Loading Page
 
 **Route:** `/loading`
 **Purpose:** Pipeline runs. Investor waits. Make every second feel productive.

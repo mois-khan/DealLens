@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getPreferences, savePreferences } from '../api/dashboard';
+import { getPreferences, savePreferences } from '../api/analyse';
 
 const ALL_CATEGORIES = [
   'EdTech', 'FinTech', 'HealthTech', 'QuickCommerce', 'SaaS',

@@ -39,8 +39,8 @@ An investor uploads a startup's pitch deck (PDF). DealLens:
 
 ### Who It's For
 
-- Angel investors evaluating early-stage startups
-- Early-stage VC partners reviewing inbound deal flow
+- **Investors**: Create a personal platform to manage inbound deal flow.
+- **Founders**: Submit decks directly to specific investors via their unique "Bio Links".
 
 ### Stack Decision Summary
 
@@ -54,7 +54,7 @@ An investor uploads a startup's pitch deck (PDF). DealLens:
 | Web search | Tavily | Returns full page content ready for LLM, not just snippets |
 | Competitor data | Serper | Google results as clean JSON, 2,500 free queries |
 | Startup data | Crunchbase | Founder + funding database, 7-day free trial |
-| Database | Supabase | Hosted Postgres, free tier, 2-min setup |
+| Database | Supabase | Hosted Postgres + Auth + RLS for Multi-Tenancy |
 | Parallelism | asyncio.gather() | Runs 3 API calls simultaneously — 3x speed improvement |
 
 ---
@@ -64,9 +64,10 @@ An investor uploads a startup's pitch deck (PDF). DealLens:
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                       FRONTEND (React + Vite)                    │
-│   Upload Page → Loading Page → Report Page (5 scroll sections)  │
+│   Auth Pages → Dashboard → Report Page (Investor View)           │
+│   /:handle (Public Submission Page)                              │
 └────────────────────────┬─────────────────────────────────────────┘
-                         │  POST /analyse  (multipart PDF)
+                         │  POST /analyse  (multipart PDF + user_id)
                          │  ← JSON report response
 ┌────────────────────────▼─────────────────────────────────────────┐
 │                    BACKEND (FastAPI / Python)                     │
@@ -95,6 +96,7 @@ An investor uploads a startup's pitch deck (PDF). DealLens:
 │                            ┌───────────▼──────────┐             │
 │                            │  Supabase (Postgres)  │             │
 │                            │  Store report JSON    │             │
+│                            │  Auth / RLS Policies  │             │
 │                            └──────────────────────┘             │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -219,11 +221,19 @@ deallens/
 
 ### Routes
 
+### Routes
+
 | Route | Component | Notes |
 |---|---|---|
-| `/` | `UploadPage` | Entry point |
-| `/loading` | `LoadingPage` | Navigate to `/report/:id` on complete |
-| `/report/:id` | `ReportPage` | Fetch report from Supabase on mount |
+| `/` | `LandingPage` | Marketing home — CTA to Sign Up |
+| `/login` | `LoginPage` | Investor Login |
+| `/signup` | `SignupPage` | Investor Signup |
+| `/onboarding`| `Onboarding` | Set initial preferences |
+| `/dashboard` | `Dashboard` | List of all deals (Protected) |
+| `/settings` | `Settings` | Profile + Bio Link config |
+| `/:handle` | `PublicSubmit` | Public-facing submission page |
+| `/loading` | `LoadingPage` | Post-submission wait screen |
+| `/report/:id` | `ReportPage` | Detailed investment brief |
 | `*` | `NotFound` | Dark 404 page |
 
 ### State

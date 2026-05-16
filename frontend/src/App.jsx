@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useParams } from 'react-router-dom';
-import UploadPage from './pages/UploadPage';
+import { BrowserRouter, Routes, Route, useNavigate, useParams, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import ProtectedRoute from './components/shared/ProtectedRoute';
+
+// Pages
+import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import DashboardPage from './pages/DashboardPage';
+import PublicSubmit from './pages/PublicSubmit';
 import LoadingPage from './pages/LoadingPage';
 import ReportPage from './pages/ReportPage';
-import SubmitPage from './pages/SubmitPage';
-import DashboardPage from './pages/DashboardPage';
 import NotFound from './pages/NotFound';
+
 import { analyseDeck, getReport } from './api/analyse';
 
 function DealLensFlow() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [activeSection, setActiveSection] = useState('scorecard');
   const [liveReport, setLiveReport] = useState(null);
@@ -21,7 +29,6 @@ function DealLensFlow() {
     setLiveReport(null);
     navigate('/loading');
     
-    // Optimistic loading animation (caps at step 4 until the API resolves)
     let step = 1;
     const interval = setInterval(() => {
       step = step < 4 ? step + 1 : 4; 
@@ -34,14 +41,13 @@ function DealLensFlow() {
       setCurrentStep(5);
       setLiveReport(data);
       
-      // Let the loading scene travel to step 5, show the final card, then zoom out.
       setTimeout(() => navigate(`/report/${data.report_id}`), 5000);
       
     } catch (err) {
       clearInterval(interval);
       console.error("Upload error:", err);
       setUploadError(err.response?.data?.detail || "Analysis failed. Ensure the backend is running.");
-      navigate('/');
+      navigate(user ? '/dashboard' : '/');
     }
   };
 
@@ -55,9 +61,19 @@ function DealLensFlow() {
 
   return (
     <Routes>
-      <Route path="/" element={<UploadPage onUpload={handleUpload} error={uploadError} />} />
-      <Route path="/submit" element={<SubmitPage />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
+      {/* Public Marketing Routes */}
+      <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
+      <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
+      <Route path="/signup" element={user ? <Navigate to="/dashboard" replace /> : <SignupPage />} />
+
+      {/* Protected Investor Routes */}
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <DashboardPage onUpload={handleUpload} error={uploadError} />
+        </ProtectedRoute>
+      } />
+      
+      {/* Shared Flow Routes */}
       <Route path="/loading" element={<LoadingPage currentStep={currentStep} />} />
       <Route 
         path="/report/:id" 
@@ -69,6 +85,10 @@ function DealLensFlow() {
           />
         } 
       />
+
+      {/* Public Bio Link Route (Must be last) */}
+      <Route path="/:handle" element={<PublicSubmit />} />
+      
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
@@ -87,8 +107,6 @@ function ReportRouteWrapper({ liveReport, activeSection, handleNavigate }) {
     const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     const hydrateReportFromBackend = async () => {
-      // Always render fast if we already have local live data,
-      // but still refresh from backend as the source of truth.
       if (liveReport) {
         setReportData(liveReport);
         setLoading(false);
@@ -109,8 +127,6 @@ function ReportRouteWrapper({ liveReport, activeSection, handleNavigate }) {
           const hasQuestions = Array.isArray(data?.questions) && data.questions.length > 0;
           const isLastAttempt = attempt === maxAttempts;
 
-          // Retry briefly if report exists but questions are still empty
-          // to avoid showing a false "not generated" state from transient lag.
           if (hasQuestions || isLastAttempt) {
             setLoading(false);
             return;
@@ -137,7 +153,7 @@ function ReportRouteWrapper({ liveReport, activeSection, handleNavigate }) {
   }, [id, liveReport]);
 
   if (loading) {
-    return <div className="min-h-screen bg-[#08090a] flex items-center justify-center text-[#8a8f98]">Loading report...</div>;
+    return <div className="min-h-screen bg-[#08090a] flex items-center justify-center text-[#8a8f98] font-mono">Loading report...</div>;
   }
 
   if (fetchError || !reportData) {
@@ -157,9 +173,11 @@ function ReportRouteWrapper({ liveReport, activeSection, handleNavigate }) {
 
 function App() {
   return (
-    <BrowserRouter>
-      <DealLensFlow />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <DealLensFlow />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

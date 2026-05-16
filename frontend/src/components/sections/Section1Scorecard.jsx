@@ -56,7 +56,7 @@ export default function Section1Scorecard({ scorecard, trace, onTraceabilityClic
               {overallLabel}
             </span>
             <span className="text-[10px] font-mono text-text-faint uppercase tracking-wider">
-              {scorecard.top_flags.length} flag{scorecard.top_flags.length !== 1 ? 's' : ''} · {scorecard.strengths.length} strength{scorecard.strengths.length !== 1 ? 's' : ''}
+              {scorecard.top_flags?.length || 0} flag{(scorecard.top_flags?.length || 0) !== 1 ? 's' : ''} · {scorecard.strengths?.length || 0} strength{(scorecard.strengths?.length || 0) !== 1 ? 's' : ''}
             </span>
           </div>
           <p className="text-sm font-sans text-text-secondary leading-relaxed max-w-xl">
@@ -79,7 +79,7 @@ export default function Section1Scorecard({ scorecard, trace, onTraceabilityClic
               Deal Profile
             </h3>
             <div className="rounded-xl bg-bg-raised/30 border border-white/5 p-2">
-              <ScoreRadar dimensions={scorecard.dimensions} />
+              <ScoreRadar dimensions={scorecard.dimensions || {}} />
             </div>
           </div>
           
@@ -102,11 +102,11 @@ export default function Section1Scorecard({ scorecard, trace, onTraceabilityClic
             Dimension Breakdown
           </h3>
           <div className="space-y-5 pt-1">
-            <ScoreBar label="Founder Credibility" score={scorecard.dimensions.founder_credibility} delay={100} />
-            <ScoreBar label="Market Validity" score={scorecard.dimensions.market_validity} delay={200} />
-            <ScoreBar label="Competitive Moat" score={scorecard.dimensions.competitive_moat} delay={300} />
-            <ScoreBar label="Traction Quality" score={scorecard.dimensions.traction_quality} delay={400} />
-            <ScoreBar label="Financial Soundness" score={scorecard.dimensions.financial_soundness} delay={500} />
+            <ScoreBar label="Founder Credibility" score={scorecard.dimensions?.founder_credibility || 0} delay={100} />
+            <ScoreBar label="Market Validity" score={scorecard.dimensions?.market_validity || 0} delay={200} />
+            <ScoreBar label="Competitive Moat" score={scorecard.dimensions?.competitive_moat || 0} delay={300} />
+            <ScoreBar label="Traction Quality" score={scorecard.dimensions?.traction_quality || 0} delay={400} />
+            <ScoreBar label="Financial Soundness" score={scorecard.dimensions?.financial_soundness || 0} delay={500} />
           </div>
         </div>
       </div>
@@ -120,7 +120,7 @@ export default function Section1Scorecard({ scorecard, trace, onTraceabilityClic
             Critical Flags
           </h3>
           <ul className="space-y-2.5">
-            {scorecard.top_flags.map((flag, i) => (
+            {(scorecard.top_flags || []).map((flag, i) => (
               <li key={i} className="text-sm text-text-secondary flex items-start gap-3 rounded-lg px-3 py-2.5 bg-verdict-red-bg/40 border border-verdict-red-border/40">
                 <span className="text-verdict-red-text font-mono text-[10px] font-bold mt-0.5 flex-shrink-0">
                   {String(i + 1).padStart(2, '0')}
@@ -128,7 +128,7 @@ export default function Section1Scorecard({ scorecard, trace, onTraceabilityClic
                 <span className="leading-relaxed">{flag}</span>
               </li>
             ))}
-            {scorecard.top_flags.length === 0 && (
+            {(!scorecard.top_flags || scorecard.top_flags.length === 0) && (
               <li className="text-sm text-text-muted italic px-3 py-2.5">No critical flags detected.</li>
             )}
           </ul>
@@ -141,7 +141,7 @@ export default function Section1Scorecard({ scorecard, trace, onTraceabilityClic
             Key Strengths
           </h3>
           <ul className="space-y-2.5">
-            {scorecard.strengths.map((str, i) => (
+            {(scorecard.strengths || []).map((str, i) => (
               <li key={i} className="text-sm text-text-secondary flex items-start gap-3 rounded-lg px-3 py-2.5 bg-verdict-green-bg/40 border border-verdict-green-border/40">
                 <span className="text-verdict-green-text font-mono text-[10px] font-bold mt-0.5 flex-shrink-0">
                   {String(i + 1).padStart(2, '0')}

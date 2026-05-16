@@ -56,7 +56,8 @@
 - **All async operations require both a loading state and an error state** — no exceptions. A component that fetches data must visually handle: loading (skeleton), success (data), and error (message or boundary).
 - **No inline styles anywhere.** Tailwind classes only. If a value is not in the design system, it must be added to `tailwind.config.js` first.
 - **No `useState` for derived data.** If a value can be computed from existing state, compute it inline — do not store it in state.
-- **Routing uses React Router.** Three routes only: `/`, `/loading`, `/report/:id`. A catch-all `*` renders `<NotFound />`. Do not add routes not in the spec.
+- **Routing uses React Router.** Protected routes (Dashboard, Settings, Reports) must be wrapped in an `ProtectedRoute` component that checks for an active Supabase session.
+- **Handle Routing:** The `/:handle` route must be the LAST route in the `Switch/Routes` block to ensure it doesn't collide with reserved paths like `/login` or `/dashboard`.
 - **Props must be destructured** at the top of every component function — no `props.something` access.
 - **Every component that receives data must handle `null` and `undefined` gracefully.** Use optional chaining (`?.`) and nullish coalescing (`??`) everywhere. A missing field must never crash the component.
 
@@ -126,6 +127,7 @@
 - **Supabase operations live in `db/supabase_client.py`.** Never import supabase or call DB operations from routers or pipeline modules directly.
 - **One router file: `routers/analyse.py`.** It handles `POST /analyse` and `GET /report/{id}` only. `main.py` handles app setup and CORS only.
 - **CORS must be configured in `main.py`** to allow `http://localhost:5173` in development. Do not hardcode production URLs.
+- **Every backend request for user-owned data** must verify the `user_id` from the Supabase JWT. Never trust a `user_id` passed in the request body without verifying the session token.
 - **Type hints on every function signature.** Every parameter and return type must be annotated.
 
 ---
@@ -258,7 +260,10 @@ F1 (claim extraction) must be working before any other module is built. F7 (ques
 - Never use `print()` for debugging in production code paths — use `logging`
 - Never add a feature, page, or API endpoint not specified in the project docs without explicit instruction
 - Never modify `tailwind.config.js` colour tokens without also updating `design.md`
-- Never change the API response schema without updating both the Pydantic models and the frontend data mapping
+- **Never change the API response schema** without updating both the Pydantic models and the frontend data mapping.
+- **Never allow a handle collision.** When creating a profile, always check if the generated `handle` already exists in the `profiles` table.
+- **Never store plain-text passwords.** Always use Supabase Auth's built-in hashing and management.
+
 
 ---
 

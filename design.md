@@ -715,68 +715,31 @@ function Sidebar({ active, onNavigate }) {
 
 ---
 
-### 6.8 Upload Page
+### 6.8 Upload Page (Now Landing Page)
 
 The first screen the investor sees. Full-page, centred, minimal.
+Changed to a Marketing Landing page with a "Get Started" CTA that leads to Sign Up.
 
-```jsx
-// UploadPage.jsx
-function UploadPage({ onUpload, loading }) {
-  const [dragging, setDragging] = useState(false);
+### 6.9 Public Submission Page (Bio Link)
 
-  return (
-    <div className="min-h-screen bg-bg-base flex flex-col items-center justify-center px-6">
-      {/* Logo */}
-      <div className="mb-12 text-center">
-        <h1 className="text-3xl font-sans font-semibold text-text-primary">
-          Deal<span className="text-accent-light">Lens</span>
-        </h1>
-        <p className="text-sm font-sans text-text-muted mt-2">
-          AI-powered due diligence in under 10 minutes
-        </p>
-      </div>
+A variant of the original Upload Page, branded with the investor's name.
+Route: `/:handle`
 
-      {/* Drop zone */}
-      <div
-        onDragOver={e => { e.preventDefault(); setDragging(true); }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={e => { e.preventDefault(); setDragging(false); onUpload(e.dataTransfer.files[0]); }}
-        className={`
-          w-full max-w-lg rounded-2xl border-2 border-dashed
-          flex flex-col items-center justify-center gap-4 py-16 px-8
-          transition-colors duration-150 cursor-pointer
-          ${dragging
-            ? 'border-accent bg-accent/5'
-            : 'border-white/10 hover:border-white/20 bg-bg-surface'
-          }
-        `}
-      >
-        <div className="w-12 h-12 rounded-xl bg-bg-raised flex items-center justify-center">
-          <span className="text-2xl">📄</span>
-        </div>
-        <div className="text-center">
-          <p className="text-sm font-sans font-medium text-text-secondary">
-            Drop your pitch deck here
-          </p>
-          <p className="text-xs font-mono text-text-faint mt-1">
-            PDF only · Max 20MB
-          </p>
-        </div>
-        <label className="cursor-pointer">
-          <span className="px-4 py-2 rounded-md bg-transparent border border-white/10 hover:bg-bg-raised text-sm font-sans font-medium text-text-secondary transition-colors">
-            Browse file
-          </span>
-          <input type="file" accept=".pdf" className="hidden" onChange={e => onUpload(e.target.files[0])} />
-        </label>
-      </div>
-    </div>
-  );
-}
-```
+### 6.10 Auth Forms
 
----
+Standardized layout for Login and Sign Up.
+- **Background**: `bg-bg-base`
+- **Form Card**: `max-w-md w-full shadow-card bg-bg-surface rounded-2xl p-8`
+- **Input Fields**: `rounded-md border border-white/10 bg-bg-base px-4 py-3 text-sm focus:border-accent/50 outline-none transition-all`
+- **Primary CTA**: Full width `bg-accent` button.
 
-### 6.9 Loading State
+### 6.11 Investor Dashboard
+
+The main hub for investors to manage their deal flow.
+- **Layout**: Sidebar + Main Content.
+- **Header**: Shows current Bio Link URL with a "Copy" button.
+- **Triage Stats**: Top row of `StatCard` components (Inbox, Approved, Rejected).
+- **Deal List**: A modified `DataTable` showing `Startup Name`, `Score`, `Category`, `Status`, and `Date`.
 
 Shown while the backend pipeline runs (~60–120 seconds).
 

@@ -5,7 +5,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from routers.analyse import router
+from routers.analyse import router as analyse_router
+from routers.auth import router as auth_router
 from routers.dashboard import router as dashboard_router
 import os
 
@@ -18,7 +19,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router)
+app.include_router(analyse_router)
+app.include_router(auth_router)
 app.include_router(dashboard_router)
 
 @app.get("/health")
