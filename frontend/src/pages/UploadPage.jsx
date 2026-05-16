@@ -148,7 +148,7 @@ export default function UploadPage({ onUpload, error }) {
   }, [handleIncomingFile]);
 
   return (
-    <div className="h-screen w-full flex flex-col items-center justify-center relative overflow-hidden bg-bg-base">
+    <div className="min-h-screen sm:h-screen w-full flex flex-col items-center justify-center relative overflow-hidden bg-bg-base">
       
       {/* Subtle premium background glow — intensifies on drag */}
       <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none transition-all duration-700 ease-out ${
@@ -226,34 +226,34 @@ export default function UploadPage({ onUpload, error }) {
         </div>
 
         {/* Headline */}
-        <div className="text-center max-w-3xl mb-12">
-          <h2 className="text-5xl md:text-[64px] font-sans font-bold tracking-[-0.02em] text-white leading-[1.05] mb-6">
+        <div className="text-center max-w-3xl mb-8 sm:mb-12">
+          <h2 className="text-4xl sm:text-5xl md:text-[64px] font-sans font-bold tracking-[-0.02em] text-white leading-[1.05] mb-5 sm:mb-6">
             Due diligence on any pitch deck,<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-light to-white/60">in minutes.</span>
           </h2>
-          <p className="text-lg font-sans text-text-secondary leading-relaxed max-w-xl mx-auto">
+          <p className="text-base sm:text-lg font-sans text-text-secondary leading-relaxed max-w-xl mx-auto">
             DealLens reads, verifies, and scores startup pitch decks using AI — so you walk into every meeting prepared.
           </p>
         </div>
 
         {/* Animated Stats Row */}
-        <div className="flex items-center gap-10 mb-12">
+        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 mb-10 sm:mb-12">
           <div className="text-center">
-            <p className="text-3xl font-mono font-semibold text-text-primary">
+            <p className="text-2xl sm:text-3xl font-mono font-semibold text-text-primary">
               <AnimatedNumber target={5} duration={1500} />
             </p>
             <p className="text-[10px] font-mono uppercase tracking-widest text-text-faint mt-1">Dimensions scored</p>
           </div>
-          <div className="w-px h-8 bg-white/10" />
+          <div className="hidden sm:block w-px h-8 bg-white/10" />
           <div className="text-center">
-            <p className="text-3xl font-mono font-semibold text-text-primary">
+            <p className="text-2xl sm:text-3xl font-mono font-semibold text-text-primary">
               <AnimatedNumber target={3} duration={1500} />
             </p>
             <p className="text-[10px] font-mono uppercase tracking-widest text-text-faint mt-1">Intel sources</p>
           </div>
-          <div className="w-px h-8 bg-white/10" />
+          <div className="hidden sm:block w-px h-8 bg-white/10" />
           <div className="text-center">
-            <p className="text-3xl font-mono font-semibold text-accent-light">
+            <p className="text-2xl sm:text-3xl font-mono font-semibold text-accent-light">
               &lt;<AnimatedNumber target={10} duration={2000} />
             </p>
             <p className="text-[10px] font-mono uppercase tracking-widest text-text-faint mt-1">Minutes</p>
@@ -273,7 +273,7 @@ export default function UploadPage({ onUpload, error }) {
           }}
           className={`
             w-full max-w-md rounded-2xl border-2 backdrop-blur-md
-            flex flex-col items-center justify-center gap-5 py-12 px-8
+            flex flex-col items-center justify-center gap-5 py-10 sm:py-12 px-6 sm:px-8
             transition-all duration-500 ease-out cursor-pointer group z-20 relative
             ${localError 
               ? 'border-verdict-red-border bg-verdict-red-bg/10 shadow-[0_0_30px_rgba(255,77,77,0.15)]' 
@@ -333,7 +333,7 @@ export default function UploadPage({ onUpload, error }) {
         </div>
 
         {/* Trust signals */}
-        <div className="flex items-center justify-center gap-6 mt-6">
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-6">
           <span className="flex items-center gap-1.5 text-[11px] font-mono text-text-faint">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />

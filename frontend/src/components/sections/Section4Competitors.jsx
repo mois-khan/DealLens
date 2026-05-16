@@ -62,40 +62,44 @@ export default function Section4Competitors({ competitors, moat }) {
         {/* Competitor List */}
         {competitors && competitors.length > 0 ? (
           <div className="rounded-xl overflow-hidden shadow-card border border-white/5 bg-bg-surface">
-            {/* Table Header */}
-            <div className="grid grid-cols-12 px-4 py-3 bg-bg-raised border-b border-white/5 text-[10px] font-mono font-medium uppercase tracking-widest text-text-muted">
-              <div className="col-span-1">#</div>
-              <div className="col-span-3">Name</div>
-              <div className="col-span-3">Backing</div>
-              <div className="col-span-3">Scale</div>
-              <div className="col-span-2 text-right">Threat</div>
-            </div>
+            <div className="overflow-x-auto">
+              <div className="min-w-[640px]">
+                {/* Table Header */}
+                <div className="grid grid-cols-12 px-4 py-3 bg-bg-raised border-b border-white/5 text-[10px] font-mono font-medium uppercase tracking-widest text-text-muted">
+                  <div className="col-span-1">#</div>
+                  <div className="col-span-3">Name</div>
+                  <div className="col-span-3">Backing</div>
+                  <div className="col-span-3">Scale</div>
+                  <div className="col-span-2 text-right">Threat</div>
+                </div>
 
-            {/* Table Body */}
-            <div className="divide-y divide-white/5">
-              {competitors.map((comp, i) => {
-                const threatStyles = {
-                  CRITICAL: 'bg-red-500/10 border-red-500/20 text-red-400',
-                  HIGH: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-                  MEDIUM: 'bg-blue-500/10 border-blue-500/20 text-blue-400',
-                  LOW: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-                };
-                const style = threatStyles[comp.threat_level] || threatStyles.LOW;
+                {/* Table Body */}
+                <div className="divide-y divide-white/5">
+                  {competitors.map((comp, i) => {
+                    const threatStyles = {
+                      CRITICAL: 'bg-red-500/10 border-red-500/20 text-red-400',
+                      HIGH: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
+                      MEDIUM: 'bg-blue-500/10 border-blue-500/20 text-blue-400',
+                      LOW: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
+                    };
+                    const style = threatStyles[comp.threat_level] || threatStyles.LOW;
 
-                return (
-                  <div key={i} className="grid grid-cols-12 px-4 py-4 items-center gap-3 hover:bg-bg-raised transition-colors group">
-                    <div className="col-span-1 text-[10px] font-mono text-text-faint">{String(i + 1).padStart(2, '0')}</div>
-                    <div className="col-span-3 text-sm font-sans font-medium text-text-primary">{comp.name}</div>
-                    <div className="col-span-3 text-xs font-sans text-text-secondary truncate pr-2" title={comp.backing}>{comp.backing}</div>
-                    <div className="col-span-3 text-xs font-sans text-text-secondary">{comp.scale}</div>
-                    <div className="col-span-2 text-right">
-                      <span className={`inline-block text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${style}`}>
-                        {comp.threat_level}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+                    return (
+                      <div key={i} className="grid grid-cols-12 px-4 py-4 items-center gap-3 hover:bg-bg-raised transition-colors group">
+                        <div className="col-span-1 text-[10px] font-mono text-text-faint">{String(i + 1).padStart(2, '0')}</div>
+                        <div className="col-span-3 text-sm font-sans font-medium text-text-primary">{comp.name}</div>
+                        <div className="col-span-3 text-xs font-sans text-text-secondary truncate pr-2" title={comp.backing}>{comp.backing}</div>
+                        <div className="col-span-3 text-xs font-sans text-text-secondary">{comp.scale}</div>
+                        <div className="col-span-2 text-right">
+                          <span className={`inline-block text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${style}`}>
+                            {comp.threat_level}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
         ) : (

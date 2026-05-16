@@ -15,7 +15,7 @@ const NAV_ITEMS = [
 
 export default function Sidebar({ active, onNavigate, filename = 'deck.pdf' }) {
   return (
-    <aside className="fixed left-0 top-0 h-full w-56 glass-panel flex flex-col z-40">
+    <aside className="hidden md:flex fixed left-0 top-0 h-full w-56 glass-panel flex-col z-40">
       {/* Brand */}
       <div className="px-5 py-4 border-b border-white/5">
         <Link to="/" className="text-base font-sans font-semibold text-text-primary hover:text-accent-light transition-colors block">

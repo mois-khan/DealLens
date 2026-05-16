@@ -5,7 +5,7 @@ export default function VerificationSidebar({ references = [], isOpen, onClose }
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-0 right-0 w-[380px] h-screen bg-bg-panel border-l border-white/5 shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-out translate-x-0">
+    <div className="fixed top-0 right-0 w-full sm:w-[380px] h-screen bg-bg-panel border-l border-white/5 shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-out translate-x-0">
       
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-white/5">
