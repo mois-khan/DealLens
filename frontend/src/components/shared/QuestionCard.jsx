@@ -20,7 +20,7 @@ export default function QuestionCard({ rank, category, severity, question, targe
     <div className={`shadow-card rounded-xl bg-bg-surface overflow-hidden border-l-[3px] ${leftBorder}`}>
       {/* Header */}
       <div
-        className="px-5 py-4 flex items-start gap-5 cursor-pointer hover:bg-bg-raised/50 transition-colors"
+        className="px-4 sm:px-5 py-4 flex items-start gap-4 sm:gap-5 cursor-pointer hover:bg-bg-raised/50 transition-colors"
         onClick={() => setOpen(!open)}
       >
         {/* Rank */}
@@ -39,32 +39,32 @@ export default function QuestionCard({ rank, category, severity, question, targe
               {severity}
             </span>
           </div>
-          <p className="text-[15px] font-sans font-medium text-white leading-relaxed">
+          <p className="text-[16px] sm:text-[15px] font-sans font-medium text-text-primary leading-relaxed">
             {question}
           </p>
         </div>
         {/* Toggle */}
-        <span className="text-text-faint/40 text-[10px] font-mono flex-shrink-0 mt-2 uppercase tracking-wider">
+        <span className="text-text-muted text-[10px] font-mono flex-shrink-0 mt-2 uppercase tracking-wider">
           {open ? '— LESS' : '+ MORE'}
         </span>
       </div>
 
       {/* Expanded detail */}
       {open && (
-        <div className="border-t border-white/5 px-5 py-5 space-y-4 bg-bg-base/60">
+        <div className="border-t border-white/5 px-4 sm:px-5 py-5 space-y-4 bg-bg-base/60">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="rounded-lg bg-bg-surface/50 px-4 py-3 border border-white/[0.03]">
               <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.15em] text-text-muted mb-1.5">Targets Claim</p>
-              <p className="text-sm font-sans text-text-secondary leading-relaxed">{targetsClaim}</p>
+              <p className="text-[14px] sm:text-sm font-sans text-text-primary leading-relaxed">{targetsClaim}</p>
             </div>
             <div className="rounded-lg bg-bg-surface/50 px-4 py-3 border border-white/[0.03]">
               <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.15em] text-text-muted mb-1.5">Gap Found</p>
-              <p className="text-sm font-sans text-text-secondary leading-relaxed">{gapFound}</p>
+              <p className="text-[14px] sm:text-sm font-sans text-text-primary leading-relaxed">{gapFound}</p>
             </div>
           </div>
           <div className="rounded-lg border-l-2 border-l-verdict-green-bar bg-verdict-green-bg/20 px-4 py-3">
             <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.15em] text-verdict-green-text mb-1.5">Strong Answer Looks Like</p>
-            <p className="text-sm text-text-secondary leading-relaxed">{strongAnswer}</p>
+            <p className="text-[14px] sm:text-sm text-text-primary leading-relaxed">{strongAnswer}</p>
           </div>
         </div>
       )}

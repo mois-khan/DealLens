@@ -59,7 +59,7 @@ export default function Section1Scorecard({ scorecard, trace, onTraceabilityClic
               {scorecard.top_flags.length} flag{scorecard.top_flags.length !== 1 ? 's' : ''} · {scorecard.strengths.length} strength{scorecard.strengths.length !== 1 ? 's' : ''}
             </span>
           </div>
-          <p className="text-sm font-sans text-text-secondary leading-relaxed max-w-xl">
+          <p className="text-[15px] sm:text-sm font-sans text-text-primary leading-relaxed max-w-xl">
             {scorecard.overall >= 7
               ? 'This deal demonstrates strong fundamentals across key dimensions. Proceed with standard diligence.'
               : scorecard.overall >= 4
@@ -121,7 +121,7 @@ export default function Section1Scorecard({ scorecard, trace, onTraceabilityClic
           </h3>
           <ul className="space-y-2.5">
             {scorecard.top_flags.map((flag, i) => (
-              <li key={i} className="text-sm text-text-secondary flex items-start gap-3 rounded-lg px-3 py-2.5 bg-verdict-red-bg/40 border border-verdict-red-border/40">
+              <li key={i} className="text-[14px] sm:text-sm text-text-primary flex items-start gap-3 rounded-lg px-3 py-2.5 bg-verdict-red-bg/40 border border-verdict-red-border/40">
                 <span className="text-verdict-red-text font-mono text-[10px] font-bold mt-0.5 flex-shrink-0">
                   {String(i + 1).padStart(2, '0')}
                 </span>
@@ -142,7 +142,7 @@ export default function Section1Scorecard({ scorecard, trace, onTraceabilityClic
           </h3>
           <ul className="space-y-2.5">
             {scorecard.strengths.map((str, i) => (
-              <li key={i} className="text-sm text-text-secondary flex items-start gap-3 rounded-lg px-3 py-2.5 bg-verdict-green-bg/40 border border-verdict-green-border/40">
+              <li key={i} className="text-[14px] sm:text-sm text-text-primary flex items-start gap-3 rounded-lg px-3 py-2.5 bg-verdict-green-bg/40 border border-verdict-green-border/40">
                 <span className="text-verdict-green-text font-mono text-[10px] font-bold mt-0.5 flex-shrink-0">
                   {String(i + 1).padStart(2, '0')}
                 </span>

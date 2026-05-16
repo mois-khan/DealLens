@@ -60,7 +60,7 @@ export default function ExpandableRow({ claim, verdict, evidence, source, questi
                 <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.15em] text-text-muted mb-2">
                   Analysis & Evidence
                 </p>
-                <p className="text-[13px] font-sans text-text-secondary leading-relaxed pl-3 border-l border-white/10">
+                <p className="text-[14px] sm:text-[13px] font-sans text-text-primary leading-relaxed pl-3 border-l border-white/10">
                   {evidence || "No detailed evidence provided for this claim."}
                 </p>
               </div>
@@ -100,7 +100,7 @@ export default function ExpandableRow({ claim, verdict, evidence, source, questi
                     <span className="w-1.5 h-1.5 rounded-full bg-accent-light" />
                     Investor Question
                   </p>
-                  <p className="text-[13px] font-sans text-text-secondary italic leading-relaxed">
+                  <p className="text-[14px] sm:text-[13px] font-sans text-text-primary italic leading-relaxed">
                     "{question}"
                   </p>
                 </div>

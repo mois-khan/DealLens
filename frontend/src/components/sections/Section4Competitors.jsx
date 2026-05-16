@@ -52,7 +52,7 @@ export default function Section4Competitors({ competitors, moat }) {
             </div>
             <div>
               <p className="text-xs font-mono uppercase tracking-widest opacity-60 mb-1">Moat Verdict</p>
-              <p className="text-sm font-sans leading-relaxed text-text-primary">
+              <p className="text-[14px] sm:text-sm font-sans leading-relaxed text-text-primary">
                 {moat.explanation || "No detailed moat analysis available."}
               </p>
             </div>
